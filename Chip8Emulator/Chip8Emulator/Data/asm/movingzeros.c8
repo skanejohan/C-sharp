@@ -1,0 +1,27 @@
+                SETABS 0 00     ; V[0] = 0 indicates movement to the right
+                SETABS 1 00     ; V[1] = 0 (x coordinate of sprite)
+                SETABS 2 00     ; V[2] = 0 (y coordinate of sprite)
+                SETI 000        ; I = 0 (mem of sprite to draw - "0")
+                SETABS 3 01     ; V[3] = 1 (used for subtraction later)
+
+DRAW:           CLS
+                DRAW 1 2 5      ; Draw sprite (5 rows high, given x, y and i as above)
+
+                ; Main loop starts here
+MAINLOOP:       SKIPEQABS 0 00  ; Skip the next instruction if V[0] == 0 (indicates we are moving right)
+                JMP MOVINGLEFT
+
+                ; We are currently moving right
+                SKIPNEQABS 1 3C ; Skip the next instruction if V[1] <> 60 (we have not reached the right edge)
+                JMP SWITCHLEFT
+                ADDABS 1 01     ; Increase x coordinate by 1
+                JMP DRAW
+SWITCHLEFT:     SETABS 0 01 ; Set V[0] to 1 (indicates movement to the left)
+
+                ; We are currently moving left
+MOVINGLEFT:     SKIPNEQABS 1 00 ; Skip the next instruction if V[1] <> 0 (we have not reached the left edge)
+                JMP SWITCHRIGHT
+                SUB 1 3         ; Decrease x coordinate by 1 (subtract V[3] from V[1])
+                JMP DRAW
+SWITCHRIGHT:    SETABS 0 00     ; Set V[0] to 0 (indicates movement to the right)
+                JMP MAINLOOP
