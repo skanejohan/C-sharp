@@ -1,0 +1,42 @@
+character uncleAilbert "Uncle Ailbert" starts at fictionSection,hidden,follows player 1 step behind,conversation is uncleTalk
+-----------------------------------------------------------------------------------------------------------------------------
+Your beloved uncle is getting old but he still looks at you the way he did when you were young and he told you stories from the Scottish heaths, the smell of whisky ever present in his breath.
+
+  conversation uncleTalk
+  ----------------------
+  statement 1: Hello Fiona, my dear!
+  response 2: Hello uncle Ailbert, how are you today?
+  statement 1 has response 2
+  response 2 causes statement 3
+  statement 3: Oh, the usual. My back hurts and the arthritis ain't getting any better. (Uncle Ailbert's ailments have always been a source of amusement to the whole family)
+  response 4: Aren't you seeing a doctor?
+  response 5: Can I help you in any way?
+  response 6: Have you spoken to cousin Maggie lately?
+  statement 3 has responses 4, 5, 6
+  response 4 causes statement 7
+  response 5 causes statement 9
+  response 6 causes statement 13
+  statement 7: I am. No good, that lot
+  response 8: Well well...
+  statement 7 has responses 8, 5
+  response 8 ends the conversation
+  statement 9: Well, I could use a drink, lass
+  response 10: I am afraid I am out of whisky for the moment
+  response 11: Would you like a cup of tea?
+  response 12: I can get you a glass of water
+  statement 9 has responses 10, 11, 12
+  response 10 causes statement 15
+  response 11 causes statement 16
+  response 12 causes statement 18
+  statement 13: Yes, she came to visit me the other day. Sends her regards, she does.
+  response 14: Send her my best, won't you?
+  statement 13 has response 14
+  response 14 ends the conversation
+  statement 15: Now that is a shame!
+  statement 15 has responses 11, 12
+  statement 16: A cup of tea? Well, if you are out of whiskey... yes please.
+  response 17: Follow me into the kitchen. I will make you a nice cup.[[show makeTea]]
+  statement 16 has response 17
+  response 17 ends the conversation
+  statement 18: Water? I may be old and possibly not in perfect health but there are limits to your stupid modernity!
+  statement 18 has responses 10, 11

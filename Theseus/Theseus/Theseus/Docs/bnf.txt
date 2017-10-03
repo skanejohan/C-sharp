@@ -1,0 +1,128 @@
+document ::= location | character
+
+location ::= "location" identifier """ string """ {"-"} section {flag} {item} {door} {exit}
+
+character ::= "character" identifier """ string """ {[","] characterOption} {"-"} section {conversation}
+
+characterOption ::= "starts" "at" identifier 
+                |   "starts" "in" identifier
+                |   "hidden"
+				|   "follows" "player" number ("step" | "steps") "behind"
+				|   "conversation" "is" identifier
+				
+conversation ::= "conversation" identifier {"-"} conversationItem {conversationItem}
+
+conversationItem ::= "statement" number ":" string
+                 |   "response" number ":" string
+				 |   "statement" number "has" ("response" | "responses") number {"," number}
+				 |   "response" number "causes" "statement" number
+				 |   "response" number "ends" "the" "conversation"
+				 
+flag ::= "flag" identifier "is" set"
+     |   "flag" identifier "is" "not" "set"
+
+exit ::= "exit" direction "to" identifier ["via" identifier]
+
+direction ::= "north" | "east" | "south" | "west"
+
+door ::= "door" identifier """ string """ {doorOption}
+
+item ::= {"+"} "item" identifier """ string """ ["hidden"] {[,] itemOption} {"-"} section {function} {itemAction}
+
+itemOption ::= "container" | doorOption
+
+doorOption ::= "openable" 
+           |   "open" 
+           |   "closed"
+           |   "lockable" 
+           |   "locked" 
+           |   "unlocked"
+           |   "requires" "combination" number
+		   |   "pickable"
+		   |   "opensWhenPicked"
+		   |   "requires" "key" identifier
+		   
+itemAction ::= "openedOk" "=" section
+           |   "openFailed" "=" section
+           |   "pickedOk" "=" section
+           |   "pickFailed" "=" section
+           |   "afterTake" "=" section
+
+function ::= "function" identifier """ string """ ["hidden"] {"-"} section
+
+section ::= sectionItem { sectionItem }
+
+sectionItem ::= sectiontext | action | ifstatement
+
+sectiontext ::= sectiontextstring { sectiontextstring }
+
+sectiontextstring ::= "<br>"
+                  |   "<b>"
+                  |   "</b>"
+			      |   "<i>"
+			      |   "</i>"
+		          |   string
+            
+action ::= "[[" effect {"," effect} "]]"
+
+effect ::= "add" identifier "to" identifier
+       |   "set" identifier
+       |   "clear" identifier
+	   |   "show" identifier
+	   |   "hide" identifier
+	   |   "move" identifier "to" identifier
+	   |   "lock" identifier
+	   |   "unlock" identifier
+	   |   "close" identifier
+	   |   "open" identifier
+
+ifstatement ::= if sectionItem {elseif sectionItem} [else sectionItem] end
+
+if ::= "<<if" complexcondition ">>"
+
+elseif ::= "<<else if" eval ">>"
+
+else ::= "<<else>>"
+
+end ::= "<<end>>"
+
+complexcondition ::= conditionterm "or" complexcondition
+                 |   conditionterm
+			
+conditionterm ::= conditionfactor "and" conditionterm
+              |   conditionfactor
+
+conditionfactor ::= "(" complexcondition ")"
+                |   "not" simplecondition
+                |   simplecondition
+
+simplecondition ::= identifier "is" state
+                |   identifier "is" "not" state
+                |   identifier "is" "set"
+                |   identifier "is" "not" "set"
+                |   identifier "has" "been" state
+                |   identifier "has" "not" "been" state
+                |   identifier "has" "been" "set"
+                |   identifier "has" "not" "been" "set"
+	            |   identifier "is" "in" identifier
+	            |   identifier "is" "not" "in" identifier
+           	    |   identifier "is" "here"
+                |   identifier "is" "not" "here"
+           	    |   "I" "carry" identifier
+	            |   "I" "do" "not" "carry" identifier
+	            |   "I" "have" "carried" identifier
+	            |   "I" "have" "not" "carried" identifier
+
+state ::= "open" | "closed" | "locked" | "unlocked" | "picked" | "empty" | "hidden"
+
+identifier ::= identchar { identchar }
+
+identchar ::= (any character except control character and separator character)
+
+number ::= digit { digit }
+
+
+--- GO THROUGH ALL TODOS. 
+--- FIGURE OUT HOW THE APPLICATION SHOULD LOOK AT THIS POINT. WE WANT TO CHECK IN (OR INCLUDE AS RESOURCES) THE EIGHT OR SO THESEUS FILES SOMEHOW.
+--- COMMIT
+--- CONTINUE WITH SEMANTICS CHECK WHICH SHOULD ALLOW FIX OF FURTHER TODOS.

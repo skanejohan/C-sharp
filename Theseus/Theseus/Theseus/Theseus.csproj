@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{577D14AC-46E3-4C4E-90EA-1BBD77DAB124}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Theseus</RootNamespace>
+    <AssemblyName>Theseus</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Sprache, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sprache.2.1.0\lib\net40\Sprache.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Elements\Action.cs" />
+    <Compile Include="Elements\Character.cs" />
+    <Compile Include="Elements\CharacterOption.cs" />
+    <Compile Include="Elements\Conversation.cs" />
+    <Compile Include="Elements\ConversationItem.cs" />
+    <Compile Include="Elements\Door.cs" />
+    <Compile Include="Elements\Effect.cs" />
+    <Compile Include="Elements\Enumerations\CharacterOption.cs" />
+    <Compile Include="Elements\Enumerations\ConditionMode.cs" />
+    <Compile Include="Elements\Enumerations\ConversationItemType.cs" />
+    <Compile Include="Elements\Enumerations\Direction.cs" />
+    <Compile Include="Elements\Enumerations\EffectType.cs" />
+    <Compile Include="Elements\Enumerations\ItemOptionType.cs" />
+    <Compile Include="Elements\Enumerations\ItemState.cs" />
+    <Compile Include="Elements\Exit.cs" />
+    <Compile Include="Elements\Expressions.cs" />
+    <Compile Include="Elements\Extensions\EnumerableElementExtensions.cs" />
+    <Compile Include="Elements\Extensions\StringExtensions.cs" />
+    <Compile Include="Elements\Flag.cs" />
+    <Compile Include="Elements\Function.cs" />
+    <Compile Include="Elements\IfStatement.cs" />
+    <Compile Include="Elements\Item.cs" />
+    <Compile Include="Elements\ItemAction.cs" />
+    <Compile Include="Elements\Enumerations\ItemActionType.cs" />
+    <Compile Include="Elements\ItemOption.cs" />
+    <Compile Include="Elements\Section.cs" />
+    <Compile Include="Elements\SectionText.cs" />
+    <Compile Include="Elements\SimpleCondition.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Interfaces\IElement.cs" />
+    <Compile Include="Elements\Location.cs" />
+    <Compile Include="Interfaces\IJavaScriptCodeEmitter.cs" />
+    <Compile Include="Interfaces\ISemanticsValidator.cs" />
+    <Compile Include="Interfaces\ITheseusCodeEmitter.cs" />
+    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Interfaces\ISemantics.cs" />
+    <Compile Include="Semantics\SemanticsManager.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Docs\bnf.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

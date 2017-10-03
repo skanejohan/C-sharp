@@ -1,0 +1,35 @@
+location historySection "history section"
+-----------------------------------------
+This windowless room contains books on history, a subject that has been dear to you ever since you took over the bookshop. Maybe as a result of this, the room is filled to the brim with books on the subject. Along the walls are books in the shelves from floor to ceiling. Two coffee tables are located here, both covered by large stacks of books. The two armchairs standing in one corner are also filled with books. You really ought to get rid of some of the books in here, and clean up the room a bit. If only someone would come in and buy a lot of these books... <<if EntranceKnown is set>>You look at the bookshelf on the eastern wall in a way that you have never done before. <<end>><br><br>From here you can go north to the art section or south to your office<<if I have not carried officeKey>> which you know is filled with even more books. At least you could enter the office if the door wasn't locked and you hadn't misplaced the key. Upon second thought, north seems the only viable option here<<end>>.
+
+  flag BookshelfPulled is not set
+  flag BookshelfEmpty is not set
+  flag EntranceKnown is not set
+  flag WallBroken is not set
+  flag UncleAilbertIntroduced is not set
+  flag UncleAilbertGone is not set
+
+  item historyBookShelf "history bookshelf" hidden
+  ------------------------------------------------
+  <<if BookshelfPulled is set>>The dusty bookshelf has been pulled from its place along the wall. Behind it, you can see a part of a brick wall.<<else if BookshelfEmpty is set>>Behind the now empty bookshelf, you can see an old brick wall.<<else if EntranceKnown is set>>This shelf is filled with books. Emptying it may be a daunting task in this room that is already so overcrowded[[show empty]]<<else>>This shelf is filled with books. World War II, Christofer Columbus and the French Revolution. Operation Desert Storm, ancient Greece and Titanic. Creative chaos in this shelf, as well as in the rest of the shop.<<end>>
+
+    function empty "Empty" hidden
+    -----------------------------
+    You spend a good while emptying the bookshelf. The stacks on the floor grow, as do those in the two armchairs and on the coffee tables. You even stack books under the tables, to prevent them from collapsing completely. When you are done, the room is barely navigable, and the dust that has gathered on the now empty shelves for some reason makes you think of mouldy feather boas.[[clear EntranceKnown,set BookshelfEmpty,hide empty,show pull]]
+
+    function pull "Pull" hidden
+    ---------------------------
+    You pull the bookshelf out from the wall. It doesn't move far, given that the room is full of stacked books, but gives you access to a part of the brick wall behind it.[[clear BookshelfEmpty,set BookshelfPulled,hide pull,show wall]]
+
+  item wall "wall" hidden
+  -----------------------
+  <<if WallBroken is set>>There is a hole in the wall, large enough to enter.<<else>>When you look closer at the wall, one section of it looks newer than the rest.[[show hit]]<<end>>
+
+    function hit "Hit" hidden
+    -------------------------
+    <<if I do not carry rockPick>>You knock at the wall. When you knock in the middle of the newer section, it sounds hollow. When you look closer, it actually has the shape of a door. Could the book be right?<<else if UncleAilbertIntroduced is set>>You really don't want to smash the wall in uncle Ailbert's presence.<<else if UncleAilbertGone is set>>You hit the wall with the axe until the door-shaped section has been demolished. Behind it, you see only darkness.[[hide hit,set WallBroken]]<<else>>As you are about to hit the wall, the entrance door bell chimes. You take a short pause, then walk out to meet your presumed customer. It turns out to be your uncle Ailbert.[[set UncleAilbertIntroduced,show uncleAilbert,move to fictionSection]]<<end>>
+
+  door officeDoor "office door" lockable locked requires key officeDoorKey
+
+  exit south to office via officeDoor
+  exit north to artSection
