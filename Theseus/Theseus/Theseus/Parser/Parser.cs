@@ -334,14 +334,14 @@ namespace Theseus.Parser
             from _1 in Parse.String("door")
             from name in IdentParser
             from label in QuotedStringParser
-            from options in ItemOptionParser.Token().Many()
+            from options in DoorOptionParser.Token().Many()
             select new Door(name, label, options);
 
-        internal static Parser<Elements.Enumerations.Direction> DirectionParser =
-            Parse.String("north").Return(Elements.Enumerations.Direction.North)
-            .Or(Parse.String("east").Return(Elements.Enumerations.Direction.East))
-            .Or(Parse.String("south").Return(Elements.Enumerations.Direction.South))
-            .Or(Parse.String("west").Return(Elements.Enumerations.Direction.West));
+        internal static Parser<Enum.Direction> DirectionParser =
+            Parse.String("north").Return(Enum.Direction.North)
+            .Or(Parse.String("east").Return(Enum.Direction.East))
+            .Or(Parse.String("south").Return(Enum.Direction.South))
+            .Or(Parse.String("west").Return(Enum.Direction.West));
 
         internal static readonly Parser<Exit> ExitParser =
             from _1 in Parse.String("exit").Token()
@@ -370,14 +370,14 @@ namespace Theseus.Parser
              from _2 in Parse.String(":").Token()
              from section in SectionParser
              select new ConversationItem(
-                 Elements.Enumerations.ConversationItemType.StatementDefinition,
+                 Enum.ConversationItemType.StatementDefinition,
                  int.Parse(number), 0, section, new List<int>()))
             .Or(from _1 in Parse.String("response").Token()
                 from number in Parse.Number
                 from _2 in Parse.String(":").Token()
                 from section in SectionParser
                 select new ConversationItem(
-                    Elements.Enumerations.ConversationItemType.ResponseDefinition,
+                    Enum.ConversationItemType.ResponseDefinition,
                     int.Parse(number), 0, section, new List<int>()))
             .Or(from _1 in Parse.String("statement").Token()
                 from number in Parse.Number
@@ -385,21 +385,21 @@ namespace Theseus.Parser
                 from _3 in (Parse.String("responses").Or(Parse.String("response")))
                 from numbers in NumbersParser
                 select new ConversationItem(
-                    Elements.Enumerations.ConversationItemType.StatementHasResponses,
+                    Enum.ConversationItemType.StatementHasResponses,
                     int.Parse(number), 0, null, numbers))
             .Or(from _1 in Parse.String("response").Token()
                 from responseNumber in Parse.Number
                 from _2 in Parse.String("causes").Token()
                 from _3 in Parse.String("statement").Token()
                 from statementNumber in Parse.Number
-                select new ConversationItem(Elements.Enumerations.ConversationItemType.ResponseCausesStatement,
+                select new ConversationItem(Enum.ConversationItemType.ResponseCausesStatement,
                     int.Parse(responseNumber), int.Parse(statementNumber), null, new List<int>()))
             .Or(from _1 in Parse.String("response").Token()
                 from responseNumber in Parse.Number
                 from _2 in Parse.String("ends").Token()
                 from _3 in Parse.String("the").Token()
                 from _4 in Parse.String("conversation").Token()
-                select new ConversationItem(Elements.Enumerations.ConversationItemType.ResponseEndsConversation,
+                select new ConversationItem(Enum.ConversationItemType.ResponseEndsConversation,
                     int.Parse(responseNumber), 0, null, new List<int>()));
 
         internal static readonly Parser<Conversation> ConversationParser =
@@ -414,22 +414,22 @@ namespace Theseus.Parser
              from _2 in Parse.String("at").Or(Parse.String("in")).Token()
              from loc in IdentParser
              from _3 in Parse.String(",").Optional()
-             select new CharacterOption(Elements.Enumerations.CharacterOption.StartsAt, loc))
+             select new CharacterOption(Enum.CharacterOption.StartsAt, loc))
             .Or(from _1 in Parse.String("hidden").Token()
                 from _2 in Parse.String(",").Optional()
-                select new CharacterOption(Elements.Enumerations.CharacterOption.Hidden))
+                select new CharacterOption(Enum.CharacterOption.Hidden))
             .Or(from _1 in Parse.String("follows").Token()
                 from _2 in Parse.String("player").Token()
                 from num in Parse.Number.Token()
                 from _3 in Parse.String("steps").Or(Parse.String("step")).Token()
                 from _4 in Parse.String("behind")
                 from _5 in Parse.String(",").Optional()
-                select new CharacterOption(Elements.Enumerations.CharacterOption.FollowsPlayerBehind, int.Parse(num)))
+                select new CharacterOption(Enum.CharacterOption.FollowsPlayerBehind, int.Parse(num)))
             .Or(from _1 in Parse.String("conversation").Token()
                 from _2 in Parse.String("is").Token()
                 from _3 in Parse.String(",").Optional()
                 from conv in IdentParser
-                select new CharacterOption(Elements.Enumerations.CharacterOption.ConversationIs, conv));
+                select new CharacterOption(Enum.CharacterOption.ConversationIs, conv));
 
         internal static readonly Parser<Character> CharacterParser =
             from _1 in Parse.String("character").Token()

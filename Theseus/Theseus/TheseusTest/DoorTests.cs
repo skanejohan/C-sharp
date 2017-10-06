@@ -100,6 +100,14 @@ namespace TheseusTest
         }
 
         [TestMethod]
+        public void ContainerDoesNotGetParsedForDoor()
+        {
+            var actual = TheseusParser.DoorParser.Parse("door mainDoor \"Main door\" container");
+            var expected = new Door("mainDoor", "Main door", new List<ItemOption>());
+            AssertEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void DoorWithMultipleOptionsParsesOK()
         {
             var actual = TheseusParser.DoorParser.Parse("door mainDoor \"Main door\" openable open closed lockable locked unlocked " + 
