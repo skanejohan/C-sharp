@@ -31,9 +31,23 @@ namespace Theseus.Elements
 
         public void CheckSemantics(ISemantics semantics)
         {
-            Flags.ToList().ForEach(semantics.AddFlag);
-            Items.ToList().ForEach(semantics.AddItem);
-            Doors.ToList().ForEach(semantics.AddDoor);
+            foreach (var item in Items)
+            {
+                semantics.AddItem(item);
+                item.CheckSemantics(semantics);
+            }
+            foreach (var flag in Flags)
+            {
+                semantics.AddFlag(flag);
+            }
+            foreach (var door in Doors)
+            {
+                semantics.AddDoor(door);
+            }
+            foreach (var exit in Exits)
+            {
+                semantics.AddExit(exit);
+            }
         }
 
         public string EmitTheseusCode(int indent = 0)

@@ -1,9 +1,10 @@
-﻿using Theseus.Extensions;
+﻿using System;
+using Theseus.Extensions;
 using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Flag : IElement, ITheseusCodeEmitter
+    public class Flag : IElement, IComparable, ITheseusCodeEmitter
     {
         public string Name { get; }
         public bool Set { get; }
@@ -12,6 +13,22 @@ namespace Theseus.Elements
         {
             Name = name;
             Set = set;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            var otherItem = obj as Flag;
+            if (otherItem == null)
+            {
+                return 1;
+            }
+
+            return Name.CompareTo(otherItem.Name);
         }
 
         public string EmitTheseusCode(int indent = 0)

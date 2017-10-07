@@ -7,7 +7,7 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Item : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Item : IElement, IComparable, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public int Level { get; }
         public string Name { get; }
@@ -31,9 +31,28 @@ namespace Theseus.Elements
             Actions = actions.ToList();
         }
 
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            var otherItem = obj as Item;
+            if (otherItem == null)
+            {
+                return 1;
+            }
+
+            return Name.CompareTo(otherItem.Name);
+        }
+
         public void CheckSemantics(ISemantics semantics)
         {
-            Functions.ToList().ForEach(semantics.AddFunction);
+            foreach (var function in Functions)
+            {
+                semantics.AddFunction(function);
+            }
         }
 
         public string EmitTheseusCode(int indent = 0)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Theseus.Elements.Enumerations;
 using Theseus.Elements.Extensions;
@@ -7,7 +8,7 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Door : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Door : IElement, IComparable, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public string Name { get; }
         public string Label { get; }
@@ -18,6 +19,22 @@ namespace Theseus.Elements
             Name = name;
             Label = label;
             Options = options.ToList();
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            var otherItem = obj as Door;
+            if (otherItem == null)
+            {
+                return 1;
+            }
+
+            return Name.CompareTo(otherItem.Name);
         }
 
         public string EmitTheseusCode(int indent = 0)

@@ -1,10 +1,11 @@
-﻿using Theseus.Elements.Enumerations;
+﻿using System;
+using Theseus.Elements.Enumerations;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Exit : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Exit : IElement, IComparable, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public Direction Direction { get; }
         public string Target { get; }
@@ -15,6 +16,30 @@ namespace Theseus.Elements
             Direction = direction;
             Target = target;
             Door = door;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            var otherExit = obj as Exit;
+            if (otherExit == null)
+            {
+                return 1;
+            }
+
+            if (Target == otherExit.Target)
+            {
+                if (Direction == otherExit.Direction)
+                {
+                    return Door.CompareTo(otherExit.Door);
+                }
+                return Direction.CompareTo(otherExit.Direction);
+            }
+            return Target.CompareTo(otherExit.Target);
         }
 
         public string EmitTheseusCode(int indent = 0)

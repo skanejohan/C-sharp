@@ -75,6 +75,11 @@
     <Compile Include="Elements\Section.cs" />
     <Compile Include="Elements\SectionText.cs" />
     <Compile Include="Elements\SimpleCondition.cs" />
+    <Compile Include="EventArgs\DoorDuplicateEventArgs.cs" />
+    <Compile Include="EventArgs\ExitDuplicateEventArgs.cs" />
+    <Compile Include="EventArgs\FlagDuplicateEventArgs.cs" />
+    <Compile Include="EventArgs\FunctionDuplicateEventArgs.cs" />
+    <Compile Include="EventArgs\ItemDuplicateEventArgs.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interfaces\IElement.cs" />
     <Compile Include="Elements\Location.cs" />
