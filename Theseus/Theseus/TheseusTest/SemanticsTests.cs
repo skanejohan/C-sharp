@@ -148,45 +148,45 @@ namespace TheseusTest
         [TestMethod]
         public void ExitsAddedShouldBeAvailable()
         {
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
-            semanticsManager.AddExit(new Exit(Direction.West, "target2"));
-            semanticsManager.AddExit(new Exit(Direction.South, "target3"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.W, "target2"));
+            semanticsManager.AddExit(new Exit(Direction.S, "target3"));
             Assert.AreEqual(3, semanticsManager.Exits.Count());
         }
 
         [TestMethod]
         public void ExitsDifferingOnlyInDirectionShouldBeAvailable()
         {
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
-            semanticsManager.AddExit(new Exit(Direction.West, "target2"));
-            semanticsManager.AddExit(new Exit(Direction.South, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.W, "target2"));
+            semanticsManager.AddExit(new Exit(Direction.S, "target1"));
             Assert.AreEqual(3, semanticsManager.Exits.Count());
         }
 
         [TestMethod]
         public void ExitsDifferingOnlyInTargetShouldBeAvailable()
         {
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
-            semanticsManager.AddExit(new Exit(Direction.West, "target2"));
-            semanticsManager.AddExit(new Exit(Direction.East, "target3"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.W, "target2"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target3"));
             Assert.AreEqual(3, semanticsManager.Exits.Count());
         }
 
         [TestMethod]
         public void ExitsDifferingOnlyInDoorShouldBeAvailable()
         {
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
-            semanticsManager.AddExit(new Exit(Direction.West, "target2"));
-            semanticsManager.AddExit(new Exit(Direction.East, "target1", "door1"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.W, "target2"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1", "door1"));
             Assert.AreEqual(3, semanticsManager.Exits.Count());
         }
 
         [TestMethod]
         public void DuplicateExitsShouldNotBeAllowed()
         {
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
-            semanticsManager.AddExit(new Exit(Direction.West, "target2"));
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.W, "target2"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
             Assert.AreEqual(2, semanticsManager.Exits.Count());
         }
 
@@ -195,11 +195,12 @@ namespace TheseusTest
         {
             var eventStruck = false;
             semanticsManager.ExitAlreadyExists += (o, e) => eventStruck = true;
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
-            semanticsManager.AddExit(new Exit(Direction.West, "target2"));
-            semanticsManager.AddExit(new Exit(Direction.East, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
+            semanticsManager.AddExit(new Exit(Direction.W, "target2"));
+            semanticsManager.AddExit(new Exit(Direction.E, "target1"));
             Assert.AreEqual(2, semanticsManager.Exits.Count());
             Assert.AreEqual(true, eventStruck);
         }
+
     }
 }

@@ -2,12 +2,12 @@ location fictionSection "fiction section"
 -----------------------------------------
 You are in the main section of your book shop. This section is filled with literary fiction - shelf after shelf of romance, crime and drama. At one wall, there is a small coffee table and two rickety chairs. This is where you intend to serve your loyal customers a cup of tea or coffee, and maybe a homemade biscuit or two, while they ponder on their purchases or just enjoy the literary ambience. This assumes, of course, that you have any loyal customers. Hardly anyone has used this table since you placed it there, nearly two years ago.<br><br>There are two large windows here, one on each side of the entrance door. Through the windows, you can see the large square, and the beatiful old Gothic cathedral at the other side of it. Tourists are milling about, but as usual nobody seems to notice your fine establishment. On the wall, between the door and one of the windows, hangs a small plaque. Above the door is a small bell to indicate when a customer enters. Too rarely does it sound. From here you can go west to the travel and language section, east to the art section or south to the kitchen.
 
-  item plaque "plaque"
-  --------------------
+  item plaque "plaque" fixed
+  --------------------------
   This is a small copper plaque, on which is inscribed "Parswick Books - City Centre merchant of the year 1979". It is signed by "The merchant guild of Parswick". These were better times indeed.
 
-  item frontDoor "front door"
-  ---------------------------
+  item frontDoor "front door" fixed
+  ---------------------------------
   This is the main entrance to your book shop. You see a sign that says "Closed". Luckily, that means that is says "Open" on the other side.
 
     function open "Open"

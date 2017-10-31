@@ -1,6 +1,6 @@
 location historySection "history section"
 -----------------------------------------
-This windowless room contains books on history, a subject that has been dear to you ever since you took over the bookshop. Maybe as a result of this, the room is filled to the brim with books on the subject. Along the walls are books in the shelves from floor to ceiling. Two coffee tables are located here, both covered by large stacks of books. The two armchairs standing in one corner are also filled with books. You really ought to get rid of some of the books in here, and clean up the room a bit. If only someone would come in and buy a lot of these books... <<if EntranceKnown is set>>You look at the bookshelf on the eastern wall in a way that you have never done before. <<end>><br><br>From here you can go north to the art section or south to your office<<if I have not carried officeKey>> which you know is filled with even more books. At least you could enter the office if the door wasn't locked and you hadn't misplaced the key. Upon second thought, north seems the only viable option here<<end>>.
+This windowless room contains books on history, a subject that has been dear to you ever since you took over the bookshop. Maybe as a result of this, the room is filled to the brim with books on the subject. Along the walls are books in the shelves from floor to ceiling. Two coffee tables are located here, both covered by large stacks of books. The two armchairs standing in one corner are also filled with books. You really ought to get rid of some of the books in here, and clean up the room a bit. If only someone would come in and buy a lot of these books... <<if EntranceKnown is set>>You look at the bookshelf on the eastern wall in a way that you have never done before. <<end>><br><br>From here you can go north to the art section or south to your office<<if I have not carried officeDoorKey>> which you know is filled with even more books. At least you could enter the office if the door wasn't locked and you hadn't misplaced the key. Upon second thought, north seems the only viable option here<<end>>.
 
   flag BookshelfPulled is not set
   flag BookshelfEmpty is not set
@@ -9,8 +9,8 @@ This windowless room contains books on history, a subject that has been dear to 
   flag UncleAilbertIntroduced is not set
   flag UncleAilbertGone is not set
 
-  item historyBookShelf "history bookshelf" hidden
-  ------------------------------------------------
+  item historyBookShelf "history bookshelf" hidden fixed
+  ------------------------------------------------------
   <<if BookshelfPulled is set>>The dusty bookshelf has been pulled from its place along the wall. Behind it, you can see a part of a brick wall.<<else if BookshelfEmpty is set>>Behind the now empty bookshelf, you can see an old brick wall.<<else if EntranceKnown is set>>This shelf is filled with books. Emptying it may be a daunting task in this room that is already so overcrowded[[show empty]]<<else>>This shelf is filled with books. World War II, Christofer Columbus and the French Revolution. Operation Desert Storm, ancient Greece and Titanic. Creative chaos in this shelf, as well as in the rest of the shop.<<end>>
 
     function empty "Empty" hidden

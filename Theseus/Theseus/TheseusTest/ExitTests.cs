@@ -14,7 +14,7 @@ namespace TheseusTest
         public void ExitShouldParseNorthOK()
         {
             var actual = TheseusParser.ExitParser.Parse("exit north to kitchen");
-            var expected = new Exit(Direction.North, "kitchen", "");
+            var expected = new Exit(Direction.N, "kitchen", "");
             AssertEqual(expected, actual);
         }
 
@@ -22,7 +22,7 @@ namespace TheseusTest
         public void ExitShouldParseEastOK()
         {
             var actual = TheseusParser.ExitParser.Parse("exit east to kitchen");
-            var expected = new Exit(Direction.East, "kitchen", "");
+            var expected = new Exit(Direction.E, "kitchen", "");
             AssertEqual(expected, actual);
         }
 
@@ -30,7 +30,7 @@ namespace TheseusTest
         public void ExitShouldParseSouthOK()
         {
             var actual = TheseusParser.ExitParser.Parse("exit south to kitchen");
-            var expected = new Exit(Direction.South, "kitchen", "");
+            var expected = new Exit(Direction.S, "kitchen", "");
             AssertEqual(expected, actual);
         }
 
@@ -38,7 +38,7 @@ namespace TheseusTest
         public void ExitShouldParseWestOK()
         {
             var actual = TheseusParser.ExitParser.Parse("exit west to kitchen");
-            var expected = new Exit(Direction.West, "kitchen", "");
+            var expected = new Exit(Direction.W, "kitchen", "");
             AssertEqual(expected, actual);
         }
 
@@ -46,7 +46,7 @@ namespace TheseusTest
         public void ExitShouldParseViaOK()
         {
             var actual = TheseusParser.ExitParser.Parse("exit north to kitchen via hall");
-            var expected = new Exit(Direction.North, "kitchen", "hall");
+            var expected = new Exit(Direction.N, "kitchen", "hall");
             AssertEqual(expected, actual);
         }
     }

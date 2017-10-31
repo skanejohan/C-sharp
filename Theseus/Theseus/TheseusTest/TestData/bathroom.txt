@@ -2,8 +2,8 @@ location bathroom "bathroom"
 ----------------------------
 The small bathroom fills its purpose. A toilet bowl, a sink and a mirror. You really ought to change the towel hanging next to the sink.
 
-  item mirror "mirror"
-  --------------------
+  item mirror "mirror" fixed
+  --------------------------
   You see a handsome figure in the mirror. At 45, you are satisfied with what you see. Your flowing red hair and strong arms are unmistakably celtic traits that your family has valued for centuries.
 
   exit north to kitchen via bathroomDoor

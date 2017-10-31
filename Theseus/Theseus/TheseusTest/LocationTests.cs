@@ -126,8 +126,8 @@ namespace TheseusTest
                 new List<Door>(),
                 new List<Exit>
                 {
-                    new Exit(Direction.South, "office", "officeDoor"),
-                    new Exit(Direction.North, "artSection")
+                    new Exit(Direction.S, "office", "officeDoor"),
+                    new Exit(Direction.N, "artSection")
                 });
             AssertEqual(expected, actual);
         }
@@ -183,8 +183,8 @@ namespace TheseusTest
                 },
                 new List<Exit>
                 {
-                    new Exit(Direction.South, "office", "officeDoor"),
-                    new Exit(Direction.North, "artSection")
+                    new Exit(Direction.S, "office", "officeDoor"),
+                    new Exit(Direction.N, "artSection")
                 });
             AssertEqual(expected, actual);
         }

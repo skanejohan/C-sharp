@@ -2,12 +2,12 @@ location travelSection "travel section"
 ---------------------------------------
 You are in the travel and language section of the book shop. One of the shelves in here holds dictionaries, grammar guides and the like. The other holds books about locations near and far, exotic ones about distant cultures and sandy deserts, as well as less exotic ones such as Islington and Ipswich. In one corner stands a worn armchair. Many a time have you sat here, dreaming of faraway beaches and cities where the lights never go out. Through the window, you can see the street outside, currently covered in a thin white layer of snow. From here, you can move east into the fiction section
 
-  item travelShelf "travel shelf"
-  -------------------------------
+  item travelShelf "travel shelf" fixed
+  -------------------------------------
   Oh, the books in this shelf. How you have read them, some from cover to cover, others more haphazardly, wishing that you were somewhere other than in this dreary town.
 
-  item languageShelf "language shelf"
-  -----------------------------------
+  item languageShelf "language shelf" fixed
+  -----------------------------------------
   <<if I carry houseHistoryBook and latinDictionary is hidden>>The shelf is filled with dictionaries and grammar guides. Pondering the old book in your hand, you look more closely for a latin dictionary which you are able to find, squeezed between Astrid Stedje's "Deutsche Sprache gestern und heute" and an old edition of "The Oxford Companion to English Literature".[[show latinDictionary]]<<else>>The shelf is filled with dictionaries and grammar guides. To be honest, you have probably not opened one of them after placing them in the shelf.<<end>>
 
   item latinDictionary "latin dictionary" hidden

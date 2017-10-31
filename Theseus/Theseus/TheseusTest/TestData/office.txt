@@ -2,8 +2,8 @@
 ------------------------
 This small office is dominated by a large desk in its centre. Once this well-crafted mahogany desk was your grandfather's pride, but nowadays its worn surface can hardly be seen under all the paperwork that has gathered on top of it. You don't have to look closely to know that a large portion of the papers are bills, many with a due date too far back into the past for comfort. To one side stands a large cabinet<<if cabinet has been open>>.<<else>> which you know is filled with the kind of old stuff that goes into a cabinet that is never opened.<<end>> Covering the rest of the walls are further book shelves, containing those books you know that you will never be able to sell. <<if safe is open>>An old safe stands in a corner, its door slightly ajar.<<else if safe has been open>>An old safe stands in a corner.<<else>>In a corner stands an old safe. What it contains, you don't know. Unfortunately, when your father died very suddenly all those years ago, the combination died with him. For all you know, the solution to your financial problems could be in that sturdy old safe.<<end>> From here, you can go north to the history section.
 
-  item safe "safe" container locked requires combination 1979
-  -----------------------------------------------------------
+  item safe "safe" container lockable locked requires combination 1979
+  --------------------------------------------------------------------
   The old safe is painted black. Its heavy steel door <<if safe is open>>is open.<<else>>has golden details, and a sign saying "Samuel Withers & Co. Ltd. West Bromwich". It has a dial for entering the correct combination and a large handle for opening the door.<<end>>
 
     openedOk = You enter the correct combination and with a light creaking, the door opens.
