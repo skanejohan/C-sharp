@@ -21,8 +21,8 @@ This windowless room contains books on history, a subject that has been dear to 
     ---------------------------
     You pull the bookshelf out from the wall. It doesn't move far, given that the room is full of stacked books, but gives you access to a part of the brick wall behind it.[[clear BookshelfEmpty,set BookshelfPulled,hide pull,show wall]]
 
-  item wall "wall" hidden
-  -----------------------
+  item wall "wall" hidden fixed
+  -----------------------------
   <<if WallBroken is set>>There is a hole in the wall, large enough to enter.<<else>>When you look closer at the wall, one section of it looks newer than the rest.[[show hit]]<<end>>
 
     function hit "Hit" hidden

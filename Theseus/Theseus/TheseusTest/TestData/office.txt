@@ -2,8 +2,8 @@
 ------------------------
 This small office is dominated by a large desk in its centre. Once this well-crafted mahogany desk was your grandfather's pride, but nowadays its worn surface can hardly be seen under all the paperwork that has gathered on top of it. You don't have to look closely to know that a large portion of the papers are bills, many with a due date too far back into the past for comfort. To one side stands a large cabinet<<if cabinet has been open>>.<<else>> which you know is filled with the kind of old stuff that goes into a cabinet that is never opened.<<end>> Covering the rest of the walls are further book shelves, containing those books you know that you will never be able to sell. <<if safe is open>>An old safe stands in a corner, its door slightly ajar.<<else if safe has been open>>An old safe stands in a corner.<<else>>In a corner stands an old safe. What it contains, you don't know. Unfortunately, when your father died very suddenly all those years ago, the combination died with him. For all you know, the solution to your financial problems could be in that sturdy old safe.<<end>> From here, you can go north to the history section.
 
-  item safe "safe" container lockable locked requires combination 1979
-  --------------------------------------------------------------------
+  item safe "safe" fixed container lockable locked requires combination 1979
+  --------------------------------------------------------------------------
   The old safe is painted black. Its heavy steel door <<if safe is open>>is open.<<else>>has golden details, and a sign saying "Samuel Withers & Co. Ltd. West Bromwich". It has a dial for entering the correct combination and a large handle for opening the door.<<end>>
 
     openedOk = You enter the correct combination and with a light creaking, the door opens.
@@ -12,18 +12,18 @@ This small office is dominated by a large desk in its centre. Once this well-cra
 
     + item houseHistoryBook "old book"
     ----------------------------------
-    <<if wallBroken is set>>You examine the map. The entrance to the cellar turned out to be exactly where the book indicated.<<else if historyBookShelf is in historySection>>You examine the map. Behind the bookshelf on the eastern wall of the history section it seems like there has once been an entrance to the cellar.<<else if I carry latinDictionary>>[[add historyBookShelf to historySection,set entranceIsKnown]]Using the latin dictionary, you are able to decipher the contents of the old book. It describes the history of the house in which the bookshop is located. Most of what is in the book you already know since your parents passed this information to you - whether as a child you wanted it or not - but you find a few nuggets of new information. The most interesting part is the fact that there used to be an entrance to a cellar from what is now the history section. Looking at the map, and reading the text surrounding it, you conclude that there must be a hidden entrance to the basement behind the eastern wall, currently covered by book shelves.<<else>>The leather-bound old book is written in what you assume is latin. Although you may recognize a word here and there, you really have no way of telling what the book is about. You see a small map in one of the pages. You can't be sure but you have a slight feeling of recognition.<<end>> 
+    <<if WallBroken is set>>You examine the map. The entrance to the cellar turned out to be exactly where the book indicated.<<else if historyBookShelf is not hidden>>You examine the map. Behind the bookshelf on the eastern wall of the history section it seems like there has once been an entrance to the cellar.<<else if I carry latinDictionary>>[[show historyBookShelf,set EntranceKnown]]Using the latin dictionary, you are able to decipher the contents of the old book. It describes the history of the house in which the bookshop is located. Most of what is in the book you already know since your parents passed this information to you - whether as a child you wanted it or not - but you find a few nuggets of new information. The most interesting part is the fact that there used to be an entrance to a cellar from what is now the history section. Looking at the map, and reading the text surrounding it, you conclude that there must be a hidden entrance to the basement behind the eastern wall, currently covered by book shelves.<<else>>The leather-bound old book is written in what you assume is latin. Although you may recognize a word here and there, you really have no way of telling what the book is about. You see a small map in one of the pages. You can't be sure but you have a slight feeling of recognition.<<end>> 
 
-  item cabinet "cabinet" container closed
-  ---------------------------------------
+  item cabinet "cabinet" fixed container openable closed
+  ------------------------------------------------------
   <<if cabinet is open>>You remember a lot of this stuff from your childhood. Many a time have you intended to go through this stuff, keeping some of it and throwing away some. Likely, you would throw away most of it, which may be the reason why you haven't gotten around to the task.<<else>>This old cabinet takes up a large portion of the wall.<<end>>
 
     + item magnifyingGlass "magnifying glass"
     -----------------------------------------
     It works. The thing you look at actually appears just a little bit bigger than it actually is. As you remember, it can also be used with insects in a rather harmful way. You feel a pang of guilt at the thought.
 
-    + item metalBox "metal box" container pickable opensWhenPicked requires key paperClip
-    -------------------------------------------------------------------------------------
+    + item metalBox "metal box" container locked pickable opensWhenPicked requires key paperClip
+    --------------------------------------------------------------------------------------------
     Most of the color has been scratched off this once green metal box.<<if metalBox has not been picked>> You remember it vaguely, but exactly what is inside it eludes you. It is quite heavy and when you shake it carefully, it rattles. It has a simple lock, which at the moment seems locked.<<end>>
 
       pickedOk = Using the paper clip, you manage to open the lock. You open the box and it turns out to contain your old rock collection. Not much of a collection actually, a few small stones and your old rock pick.
@@ -36,16 +36,16 @@ This small office is dominated by a large desk in its centre. Once this well-cra
       ----------------------------
       It looks rather like a hammer. If you were to describe it, that is probably the word you would use.
 
-    + item modelCar "model car"
-    ---------------------------
-    You remember playing with this car. It is brown, and somebody once told you that it represents a Leyland Princess. You have no reason to doubt that.
+      ++ item modelCar "model car"
+      ----------------------------
+      You remember playing with this car. It is brown, and somebody once told you that it represents a Leyland Princess. You have no reason to doubt that.
 
-  item desk "desk"
-  ----------------
+  item desk "desk" fixed
+  ----------------------
   The mahogany desk is cluttered with papers, most of them bills. It seems that you owe the gas company £19.32 and the phone company £26.53, and the unpaid bill of £35 is most likely the reason why the morning paper hasn't appeared in a while. Looking through the piles, you realise that you have never really cleaned out the desk since your father's death. Among other things, you find a few old magazines - it seems like the pound hit a record high in December of 1957 and a record low in Febrary of 1985. And who would have known that the "Benny Hill Show" was cancelled in 1989 (you vividly remember your parents dislike of the show)? Or that French president de Gaulle accused the British government of lacking the necessary commitment to European integration in January of 1963? Well, well... In the desk, there is also a small drawer.[[show drawer]]
 
-    + item drawer "drawer" hidden
-    -----------------------------
+    + item drawer "drawer" hidden fixed openable closed
+    ---------------------------------------------------
     <<if drawer is closed>>The drawer is closed.<<else if drawer is empty>>The drawer is empty.<<else>>The drawer is, surprisingly enough, almost empty. The only thing you see is an old paper clip.<<end>>
 
       ++ item paperClip "paper clip"

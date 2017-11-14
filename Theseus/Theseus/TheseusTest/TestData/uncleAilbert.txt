@@ -35,7 +35,7 @@ Your beloved uncle is getting old but he still looks at you the way he did when 
   statement 15: Now that is a shame!
   statement 15 has responses 11, 12
   statement 16: A cup of tea? Well, if you are out of whiskey... yes please.
-  response 17: Follow me into the kitchen. I will make you a nice cup.[[show makeTea]]
+  response 17: Follow me into the kitchen. I will make you a nice cup.[[show waterCooker.makeTea]]
   statement 16 has response 17
   response 17 ends the conversation
   statement 18: Water? I may be old and possibly not in perfect health but there are limits to your stupid modernity!

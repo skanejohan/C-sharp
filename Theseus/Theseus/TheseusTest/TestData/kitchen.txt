@@ -40,7 +40,7 @@ The cramped kitchen contains only the most essential - a sink and a small fridge
     ---------------------------------------------
     This is the key to the office.
 
-  door bathroomDoor "bathroom door" lockable closed
+  door bathroomDoor "bathroom door" closed
 
   exit south to bathroom via bathroomDoor
   exit north to fictionSection
