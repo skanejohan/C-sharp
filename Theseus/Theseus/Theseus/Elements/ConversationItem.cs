@@ -42,19 +42,27 @@ namespace Theseus.Elements
             }
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
             switch (Type)
             {
                 case ConversationItemType.StatementDefinition:
                 case ConversationItemType.ResponseDefinition:
-                    return $"conversation.addStatement({Number}, \"{Section.EmitTheseusCode()}\");".Indent(indent);
+                    cb.Add($"conversation.addStatement({Number}, () => {{").In();
+                    cb.Add("var _s = \"\"");
+                    Section.EmitJavaScriptCode(semantics, cb);
+                    cb.Add("return _s;").Out();
+                    cb.Add("});");
+                    break;
                 case ConversationItemType.StatementHasResponses:
-                    return $"conversation.setResponses({Number}, [{string.Join(", ", Responses)}]);".Indent(indent);
+                    cb.Add($"conversation.setResponses({Number}, [{string.Join(", ", Responses)}]);");
+                    break;
                 case ConversationItemType.ResponseCausesStatement:
-                    return $"conversation.setResponses({Number}, [{CausesNumber}]);".Indent(indent);
+                    cb.Add($"conversation.setResponses({Number}, [{CausesNumber}]);");
+                    break;
                 default:
-                    return $"conversation.setResponses({Number}, [0]);".Indent(indent);
+                    cb.Add($"conversation.setResponses({Number}, [0]);");
+                    break;
             }
         }
     }

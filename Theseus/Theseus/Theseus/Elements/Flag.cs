@@ -35,10 +35,5 @@ namespace Theseus.Elements
         {
             return (Set ? $"flag {Name} is set" : $"flag {Name} is not set").Indent(indent).AppendNewLine();
         }
-
-        public string EmitJavaScriptCode(int indent = 0) // TODO REMOVE
-        {
-            return ""; // Not used - code is emitted by other classes.
-        }
     }
 }

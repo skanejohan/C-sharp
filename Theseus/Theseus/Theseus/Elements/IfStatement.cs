@@ -4,7 +4,7 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class IfStatement : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class IfStatement : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public class ConditionalSection
         {
@@ -61,6 +61,20 @@ namespace Theseus.Elements
             expressions.Add(cs);
         }
 
+        public virtual void BuildSemantics(ISemantics semantics)
+        {
+        }
+
+        public virtual void CheckSemantics(ISemantics semantics)
+        {
+            foreach (var cs in Expressions)
+            {
+                cs.Expression.CheckSemantics(semantics);
+                cs.Section.CheckSemantics(semantics);
+            }
+            DefaultSection?.CheckSemantics(semantics);
+        }
+
         public string EmitTheseusCode(int indent = 0)
         {
             var s = $"<<if {expressions[0].Expression.EmitTheseusCode()}>>{expressions[0].Section.EmitTheseusCode()}";
@@ -76,26 +90,32 @@ namespace Theseus.Elements
             return s;
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            var s = $"if ({expressions[0].Expression.EmitJavaScriptCode()}) {{".Indent(indent).AppendNewLine();
-            s += expressions[0].Section.EmitJavaScriptCode(indent + 4);
-            s += "}".Indent(indent).AppendNewLine();
+            cb.Add("if (");
+            expressions[0].Expression.EmitJavaScriptCode(semantics, cb);
+            cb.Add(") {").In();
+            expressions[0].Section.EmitJavaScriptCode(semantics, cb);
+            cb.Out();
+            cb.Add("}");
 
             for (var i = 1; i < expressions.Count; i++)
             {
-                s += $"else if ({expressions[i].Expression.EmitJavaScriptCode()}) {{".Indent(indent).AppendNewLine();
-                s += expressions[i].Section.EmitJavaScriptCode(indent + 4);
-                s += "}".Indent(indent).AppendNewLine();
+                cb.Add("else if (");
+                expressions[i].Expression.EmitJavaScriptCode(semantics, cb);
+                cb.Add(") {").In();
+                expressions[i].Section.EmitJavaScriptCode(semantics, cb);
+                cb.Out();
+                cb.Add("}");
             }
 
             if (DefaultSection != null)
             {
-                s += "else {".Indent(indent).AppendNewLine();
-                s += DefaultSection.EmitJavaScriptCode(indent + 4);
-                s += "}".Indent(indent).AppendNewLine();
+                cb.Add("else {").In();
+                DefaultSection.EmitJavaScriptCode(semantics, cb);
+                cb.Out();
+                cb.Add("}");
             }
-            return s;
         }
     }
 }

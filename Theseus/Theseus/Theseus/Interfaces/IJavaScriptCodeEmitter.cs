@@ -5,6 +5,6 @@
     /// </summary>
     public interface IJavaScriptCodeEmitter
     {
-        string EmitJavaScriptCode(int indent = 0);
+        void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb);
     }
 }

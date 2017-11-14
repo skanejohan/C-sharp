@@ -2,7 +2,7 @@
 
 namespace Theseus.Elements
 {
-    public class Expression : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Expression : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public SimpleCondition Condition { get; }
 
@@ -11,14 +11,23 @@ namespace Theseus.Elements
             Condition = condition;
         }
 
+        public virtual void BuildSemantics(ISemantics semantics)
+        {
+        }
+
+        public virtual void CheckSemantics(ISemantics semantics)
+        {
+            Condition.CheckSemantics(semantics);
+        }
+
         public virtual string EmitTheseusCode(int indent = 0)
         {
             return Condition.EmitTheseusCode(indent);
         }
 
-        public virtual string EmitJavaScriptCode(int indent = 0)
+        public virtual void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            return Condition.EmitJavaScriptCode(indent);
+            Condition.EmitJavaScriptCode(semantics, cb);
         }
     }
 
@@ -31,14 +40,22 @@ namespace Theseus.Elements
             Condition2 = condition2;
         }
 
+        public override void CheckSemantics(ISemantics semantics)
+        {
+            base.CheckSemantics(semantics);
+            Condition2.CheckSemantics(semantics);
+        }
+
         public override string EmitTheseusCode(int indent = 0)
         {
             return Condition.EmitTheseusCode(indent) + " or " + Condition2.EmitTheseusCode(0);
         }
 
-        public override string EmitJavaScriptCode(int indent = 0)
+        public override void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            return Condition.EmitJavaScriptCode(indent) + " || " + Condition2.EmitJavaScriptCode(0);
+            Condition.EmitJavaScriptCode(semantics, cb);
+            cb.Add(" || ");
+            Condition2.EmitJavaScriptCode(semantics, cb);
         }
     }
 
@@ -51,14 +68,22 @@ namespace Theseus.Elements
             Condition2 = condition2;
         }
 
+        public override void CheckSemantics(ISemantics semantics)
+        {
+            base.CheckSemantics(semantics);
+            Condition2.CheckSemantics(semantics);
+        }
+
         public override string EmitTheseusCode(int indent = 0)
         {
             return Condition.EmitTheseusCode(indent) + " and " + Condition2.EmitTheseusCode(0);
         }
 
-        public override string EmitJavaScriptCode(int indent = 0)
+        public override void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            return Condition.EmitJavaScriptCode(indent) + " && " + Condition2.EmitJavaScriptCode(0);
+            Condition.EmitJavaScriptCode(semantics, cb);
+            cb.Add(" && ");
+            Condition2.EmitJavaScriptCode(semantics, cb);
         }
     }
 
@@ -73,9 +98,10 @@ namespace Theseus.Elements
             return "not " + Condition.EmitTheseusCode(0);
         }
 
-        public override string EmitJavaScriptCode(int indent = 0)
+        public override void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            return "!" + Condition.EmitJavaScriptCode(indent);
+            cb.Add("!");
+            Condition.EmitJavaScriptCode(semantics, cb);
         }
     }
 }

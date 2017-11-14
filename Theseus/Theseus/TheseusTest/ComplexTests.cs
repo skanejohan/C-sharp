@@ -3,6 +3,7 @@ using Sprache;
 using System.IO;
 using System.Reflection;
 using Theseus.Elements;
+using Theseus.Interfaces;
 using Theseus.Parser;
 
 namespace TheseusTest
@@ -69,7 +70,7 @@ namespace TheseusTest
             var document = TheseusParser.DocumentParser.Parse(code);
             Assert.IsInstanceOfType(document, typeof(Location));
             Assert.AreEqual(locationName, (document as Location).Name);
-            Assert.AreEqual(code, document.EmitTheseusCode());
+            Assert.AreEqual(code, (document as ITheseusCodeEmitter)?.EmitTheseusCode());
         }
 
         private void VerifyCharacter(string fileName, string characterName)
@@ -78,7 +79,7 @@ namespace TheseusTest
             var document = TheseusParser.DocumentParser.Parse(code);
             Assert.IsInstanceOfType(document, typeof(Character));
             Assert.AreEqual(characterName, (document as Character).Name);
-            Assert.AreEqual(code, document.EmitTheseusCode());
+            Assert.AreEqual(code, (document as ITheseusCodeEmitter)?.EmitTheseusCode());
         }
     }
 }

@@ -25,13 +25,12 @@ namespace Theseus.Elements
             return $"{header}{items}";
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            var s = $"function {Name}() {{".Indent(indent).AppendNewLine();
-            s += ConversationItems.EmitJavaScript(indent + 4, Environment.NewLine).AppendNewLine();
-            s += "conversation.startConversation(1);".Indent(indent + 4).AppendNewLine();
-            s += "}".Indent(indent).AppendNewLine();
-            return s;
+            cb.Add($"function {Name}() {{").In();
+            ConversationItems.EmitJavaScript(semantics, cb);
+            cb.Add("conversation.startConversation(1);").Out();
+            cb.Add("}");
         }
     }
 

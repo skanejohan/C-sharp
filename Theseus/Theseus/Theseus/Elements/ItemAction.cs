@@ -21,10 +21,5 @@ namespace Theseus.Elements
             var sec = Section.EmitTheseusCode(0);
             return $"{fun} = {sec}".Indent(indent).PrependNewLineIfNotEmpty();
         }
-
-        public string EmitJavaScriptCode(int indent = 0)
-        {
-            return ""; // TODO REMOVE
-        }
     }
 }

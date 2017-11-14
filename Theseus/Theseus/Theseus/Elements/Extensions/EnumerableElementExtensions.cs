@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Interfaces;
 
 namespace Theseus.Elements.Extensions
@@ -8,32 +9,37 @@ namespace Theseus.Elements.Extensions
     {
         public static string EmitSourceCode(this IEnumerable<IElement> elems)
         {
-            return string.Join("", elems.Select(e => e.EmitTheseusCode()));
+            return string.Join("", elems.Select(e => (e as ITheseusCodeEmitter)?.EmitTheseusCode()));
         }
 
         public static string EmitSourceCode(this IEnumerable<IElement> elems, int indent)
         {
-            return string.Join("", elems.Select(e => e.EmitTheseusCode(indent)));
+            return string.Join("", elems.Select(e => (e as ITheseusCodeEmitter)?.EmitTheseusCode(indent)));
         }
 
         public static string EmitSourceCode(this IEnumerable<IElement> elems, string delimiter)
         {
-            return string.Join(delimiter, elems.Select(e => e.EmitTheseusCode()));
+            return string.Join(delimiter, elems.Select(e => (e as ITheseusCodeEmitter)?.EmitTheseusCode()));
         }
 
         public static string EmitSourceCode(this IEnumerable<IElement> elems, int indent, string delimiter)
         {
-            return string.Join(delimiter, elems.Select(e => e.EmitTheseusCode(indent)));
+            return string.Join(delimiter, elems.Select(e => (e as ITheseusCodeEmitter)?.EmitTheseusCode(indent)));
         }
 
-        public static string EmitJavaScript(this IEnumerable<IElement> elems, int indent, string delimiter)
+        public static void EmitJavaScript(this IEnumerable<IElement> elems, ISemantics semantics, ICodeBuilder cb)
         {
-            return string.Join(delimiter, elems.Select(e => e.EmitJavaScriptCode(indent)));
+            foreach(var elem in elems)
+            {
+                (elem as IJavaScriptCodeEmitter)?.EmitJavaScriptCode(semantics, cb);
+            }
         }
 
-        public static string EmitJavaScript(this IEnumerable<IElement> elems, string delimiter)
+        public static void EmitDelimitedJavaScript(this IEnumerable<IElement> elems, ISemantics semantics, ICodeBuilder cb, string delimiter)
         {
-            return string.Join(delimiter, elems.Select(e => e.EmitJavaScriptCode()));
+            var cb2 = new CodeBuilder(0, 0);
+            elems.EmitJavaScript(semantics, cb2);
+            cb.Add(string.Join(delimiter, cb2.Lines()));
         }
     }
 }

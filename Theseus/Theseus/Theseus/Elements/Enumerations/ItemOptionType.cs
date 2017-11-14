@@ -3,6 +3,6 @@
     public enum ItemOptionType
     {
         Openable, Lockable, Open, Closed, Locked, Unlocked, RequiresCombination,
-        Pickable, OpensWhenPicked, RequiresKey, Container
+        Pickable, OpensWhenPicked, RequiresKey, Container, Fixed
     }
 }

@@ -44,14 +44,19 @@ namespace Theseus.Elements
             return $"{header}{section}".PrependNewLine();
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            var header = $"function {Name}() {{".Indent(indent).PrependAndAppendNewLineIfNotEmpty();
-            var section = "_s = \"\";".Indent(indent + 4).AppendNewLine();
-            section += Section.EmitJavaScriptCode(indent + 4);
-            section += "game.message = _s;".Indent(indent + 4).AppendNewLine();
-            var footer = "}".Indent(indent);
-            return $"{header}{section}{footer}";
+            var visible = Hidden ? "false" : "true";
+            cb.Add($"function {Name}(context) {{").In();
+            cb.Add("_s = \"\";");
+            Section.EmitJavaScriptCode(semantics, cb);
+            cb.Add("context.setMessage(_s);").Out();
+            cb.Add("}");
+            cb.Add($"var {Name}_visible = {visible};");
+            cb.Add($"{Name}.isVisible = () => {Name}_visible;");
+            cb.Add($"{Name}.setVisible = value => {Name}_visible = value;");
+            cb.Add($"additionalVerbs.add(\"{Label}\", {Name});");
+            cb.Add();
         }
     }
 }

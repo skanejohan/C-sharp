@@ -27,10 +27,5 @@ namespace Theseus.Elements
                     return Type.ToString().ToCamelCase();
             }
         }
-
-        public string EmitJavaScriptCode(int indent = 0)
-        {
-            return ""; // TODO REMOVE
-        }
     }
 }

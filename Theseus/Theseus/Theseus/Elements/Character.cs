@@ -7,9 +7,8 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Character : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Character : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
-        // todo support semantics for conversation - we should be able to look up conversations by name, and to detect duplicates
         public string Name { get; }
         public string Label { get; }
         public IEnumerable<CharacterOption> CharacterOptions;
@@ -25,6 +24,15 @@ namespace Theseus.Elements
             Conversations = conversations?.ToList();
         }
 
+        public void BuildSemantics(ISemantics semantics)
+        {
+            semantics.AddCharacter(this);
+        }
+
+        public void CheckSemantics(ISemantics semantics)
+        {
+        }
+
         public string EmitTheseusCode(int indent = 0)
         {
             var header = $"character {Name} \"{Label}\" {CharacterOptions.EmitSourceCode(",")}".CreateHeader();
@@ -33,46 +41,62 @@ namespace Theseus.Elements
             return $"{header}{section}{convs}";
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            var s = $"var {Name} = (function() {{".Indent(indent).AppendNewLine();
-            s += "return {".Indent(indent + 4).AppendNewLine();
-            s += $"name: \"{Name}\",".Indent(indent + 8).AppendNewLine();
-            s += $"caption: \"{Label}\",".Indent(indent + 8).AppendNewLine();
-            var conv = getConversation();
-            if (conv == "")
-            {
-                s += "verbs: [examine],".Indent(indent + 8).AppendNewLine();
-            }
-            else
-            {
-                s += "verbs: [talk, examine],".Indent(indent + 8).AppendNewLine();
-                s += $"talk: {conv},".Indent(indent + 8).AppendNewLine();
-            }
-            s += "update: update,".Indent(indent + 8).AppendNewLine();
-            s += "examine: examine,".Indent(indent + 8).AppendNewLine();
-            s += $"location: {getLocation()},".Indent(indent + 8).AppendNewLine();
-            s += "}".Indent(indent + 4).AppendNewLine();
+            cb.Add($"var {Name} = (function() {{").In();
+            cb.Add($"var isVisible = false;"); // TODO add visibility
+            cb.Add($"var location = {getLocation()};");
 
-            s += "function update() {".Indent(indent+4).PrependAndAppendNewLineIfNotEmpty();
+            cb.Add();
+            cb.Add("function getVerbs(context) {").In();
+            cb.Add("verbs = new collection();");
+            cb.Add("verbs.add(\"Examine\", examine);");
+            var conv = getConversation();
+            if (conv != "")
+            {
+                cb.Add($"verbs.add(\"Talk\", {conv});");
+            }
+            cb.Add("return verbs;").Out();
+            cb.Add("}");
+            cb.Add();
+
+            cb.Add("return {").In();
+            cb.Add($"caption: \"{Label}\",");
+            cb.Add("getVerbs: getVerbs,");
+            cb.Add("update: update,");
+            cb.Add("examine: examine,");
+            cb.Add("isVisible: () => isVisible,");
+            cb.Add("setVisible: value => isVisible = value,").Out();
+            cb.Add("}");
+            cb.Add();
+
+            cb.Add("function update() {").In();
             var follows = CharacterOptions.FirstOrDefault(co => co.Option == Enumerations.CharacterOption.FollowsPlayerBehind);
             if (follows != null)
             {
-                s += $"game.npcs.move({Name}, game.location({follows.StepsBehind}));".Indent(indent + 8).AppendNewLine();
+                cb.Add("if (location != null) {").In();
+                cb.Add($"location.characters.remove({Name})").Out();
+                cb.Add("}");
+                cb.Add($"location = context.historicLocation({follows.StepsBehind});");
+                cb.Add("if (location != null) {").In();
+                cb.Add($"location.characters.add({Name});").Out();
+                cb.Add("}");
             }
-            s += "}".Indent(indent+4).AppendNewLine();
+            cb.Out();
+            cb.Add("}");
+            cb.Add();
 
-            s += "function examine() {".Indent(indent + 4).PrependAndAppendNewLineIfNotEmpty();
-            s += "_s = \"\";".Indent(indent + 8).AppendNewLine();
-            s += Section.EmitJavaScriptCode(indent + 8);
-            s += "game.message = _s;".Indent(indent + 8).AppendNewLine();
-            s += "}".Indent(indent + 4).AppendNewLine();
+            cb.Add("function examine() {").In();
+            cb.Add("_s = \"\";");
+            Section.EmitJavaScriptCode(semantics, cb);
+            cb.Add("context.setMessage(_s);").Out();
+            cb.Add("}");
+            cb.Add();
 
-            s += Conversations.EmitJavaScript(indent + 4, Environment.NewLine).PrependAndAppendNewLineIfNotEmpty();
+            Conversations.EmitJavaScript(semantics, cb);
 
-            s += "})();".Indent(indent).AppendNewLine();
-
-            return s;
+            cb.Out();
+            cb.Add("})();");
         }
 
         private string getLocation()

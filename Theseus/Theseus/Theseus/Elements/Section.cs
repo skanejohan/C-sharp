@@ -7,7 +7,7 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Section : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Section : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public IEnumerable<IElement> Elements { get; }
 
@@ -21,14 +21,26 @@ namespace Theseus.Elements
             Elements = elements.ToList();
         }
 
+        public virtual void BuildSemantics(ISemantics semantics)
+        {
+        }
+
+        public virtual void CheckSemantics(ISemantics semantics)
+        {
+            foreach (var e in Elements)
+            {
+                (e as ISemanticsValidator)?.CheckSemantics(semantics);
+            }
+        }
+
         public string EmitTheseusCode(int indent = 0)
         {
             return Elements.EmitSourceCode().Indent(indent);
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            return Elements.EmitJavaScript(indent, Environment.NewLine).AppendNewLineIfNotEmpty();
+            Elements.EmitJavaScript(semantics, cb);
         }
     }
 }

@@ -4,7 +4,7 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class SimpleCondition : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class SimpleCondition : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public ConditionMode Mode { get; }
         public string Object { get; }
@@ -61,10 +61,25 @@ namespace Theseus.Elements
             }
         }
 
+        public void BuildSemantics(ISemantics semantics)
+        {
+        }
+
+        public void CheckSemantics(ISemantics semantics)
+        {
+            if (Mode == ConditionMode.IsSet ||
+                Mode == ConditionMode.HasBeenSet)
+            {
+                if (!semantics.HasFlagByName(Object))
+                {
+                    throw new Exception($"Unknown flag \"{Object}\"");
+                }
+            }
+        }
+
         public string EmitTheseusCode(int indent = 0)
         {
             var notS = Invert ? "not " : "";
-            //var ntS = Invert ? "n't" : "";
             var dontS = Invert ? "do not " : "";
             switch (Mode)
             {
@@ -87,27 +102,50 @@ namespace Theseus.Elements
             }
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
             var not = Invert ? "!" : "";
             switch (Mode)
             {
                 case ConditionMode.IsState:
-                    return $"TODO";
+                    if (State == ItemState.Hidden)
+                    {
+                        var s = Invert ? $"{Object}.isVisible()" : $"!{Object}.isVisible()";
+                        cb.Add(s);
+                    }
+                    else
+                    {
+                        cb.Add($"{not}{Object}.is{State}()");
+                    }
+                    break;
                 case ConditionMode.IsSet:
-                    return $"{not}game.flags.isSet(Flag.{Object})";
+                    cb.Add($"{not}context.flags().has(Flag.{Object})");
+                    break;
                 case ConditionMode.IsIn:
-                    return $"TODO";
+                    cb.Add($"{not}{Host}.items.has({Object})");
+                    break;
                 case ConditionMode.IsHere:
-                    return $"TODO";
+                    if (semantics.HasCharacterByName(Object))
+                    {
+                        cb.Add($"{not}context.location().characters.has({Object})");
+                    }
+                    else
+                    {
+                        cb.Add($"{not}context.location.items.has({Object})");
+                    }
+                    break;
                 case ConditionMode.IsCarried:
-                    return $"TODO";
+                    cb.Add($"{not}context.inventory().has({Object})");
+                    break;
                 case ConditionMode.HasBeenState:
-                    return $"TODO";
+                    cb.Add($"{not}{Object}.hasBeen{State}()");
+                    break;
                 case ConditionMode.HasBeenSet:
-                    return $"TODO";
+                    cb.Add($"{not}context.historicFlags().has(Flag.{Object})");
+                    break;
                 default:
-                    return $"TODO";
+                    cb.Add($"{not}context.historicInventory().has({Object})");
+                    break;
             }
         }
     }

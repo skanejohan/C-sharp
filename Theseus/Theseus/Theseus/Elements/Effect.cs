@@ -1,11 +1,11 @@
-﻿using Theseus.Elements.Enumerations;
+﻿using System;
+using Theseus.Elements.Enumerations;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    // TODO We will probably need to access the semantics from e.g. EmitJavaScriptCode. How? 
-    public class Effect : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Effect : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public EffectType Type { get; }
         public string Object { get; }
@@ -16,6 +16,22 @@ namespace Theseus.Elements
             Type = type;
             Object = obj;
             Host = host;
+        }
+
+        public virtual void BuildSemantics(ISemantics semantics)
+        {
+        }
+
+        public virtual void CheckSemantics(ISemantics semantics)
+        {
+            if (Type == EffectType.Set ||
+                Type == EffectType.Clear)
+            {
+                if (!semantics.HasFlagByName(Object))
+                {
+                    throw new Exception($"Unknown flag \"{Object}\"");
+                }
+            }
         }
 
         public string EmitTheseusCode(int indent = 0)
@@ -46,39 +62,27 @@ namespace Theseus.Elements
             return "";
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            var s = "TODO";
             switch (Type)
             {
-                //case EffectType.Add:
-                //    return $"add {Object} to {Host}";
+                // TODO additional eeffect types
                 case EffectType.Set:
-                    s = $"game.flags.set(Flag.{Object});";
+                    cb.Add($"context.flags().add(Flag.{Object});");
                     break;
                 case EffectType.Clear:
-                    s = $"game.flags.clear(Flag.{Object});";
+                    cb.Add($"context.flags().delete(Flag.{Object});");
                     break;
                 case EffectType.Show:
-                    s = $"game.verbs.add({Object});"; // TODO or item
+                    cb.Add($"{Object}.setVisible(true);");
                     break;
                 case EffectType.Hide:
-                    s = $"game.verbs.remove({Object});"; // TODO or item
+                    cb.Add($"{Object}.setVisible(false);");
                     break;
-                    //case EffectType.Hide:
-                    //    return $"hide {Object}";
-                    //case EffectType.MoveTo:
-                    //    return $"move to {Object}";
-                    //case EffectType.Lock:
-                    //    return $"lock {Object}";
-                    //case EffectType.Close:
-                    //    return $"close {Object}";
-                    //case EffectType.Open:
-                    //    return $"open {Object}";
-                    //case EffectType.Unlock:
-                    //    return $"unlock {Object}";
+                case EffectType.MoveTo:
+                    cb.Add($"context.setLocation({Object})");
+                    break;
             }
-            return s.Indent(indent);
         }
 
     }

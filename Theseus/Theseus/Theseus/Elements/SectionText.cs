@@ -17,9 +17,10 @@ namespace Theseus.Elements
             return Txt;
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            return $"_s += \"{Txt}\";".Indent(indent);
+            var escapedText = Txt.Replace("\"", "&quot;");
+            cb.Add($"_s += \"{escapedText}\";");
         }
 
         // TODO: Semantics check, we probably want to verify matching opening and closing html tags here.

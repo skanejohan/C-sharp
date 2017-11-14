@@ -29,7 +29,7 @@ door ::= "door" identifier """ string """ {doorOption}
 
 item ::= {"+"} "item" identifier """ string """ ["hidden"] {[,] itemOption} {"-"} section {function} {itemAction}
 
-itemOption ::= "container" | doorOption
+itemOption ::= "container" | "fixed" | doorOption
 
 doorOption ::= "openable" 
            |   "open" 
@@ -120,9 +120,3 @@ identifier ::= identchar { identchar }
 identchar ::= (any character except control character and separator character)
 
 number ::= digit { digit }
-
-
---- GO THROUGH ALL TODOS. 
---- FIGURE OUT HOW THE APPLICATION SHOULD LOOK AT THIS POINT. WE WANT TO CHECK IN (OR INCLUDE AS RESOURCES) THE EIGHT OR SO THESEUS FILES SOMEHOW.
---- COMMIT
---- CONTINUE WITH SEMANTICS CHECK WHICH SHOULD ALLOW FIX OF FURTHER TODOS.

@@ -6,7 +6,7 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Action : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Action : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public IEnumerable<Effect> Effects { get; }
 
@@ -20,14 +20,26 @@ namespace Theseus.Elements
             Effects = effects.ToList();
         }
 
+        public virtual void BuildSemantics(ISemantics semantics)
+        {
+        }
+
+        public virtual void CheckSemantics(ISemantics semantics)
+        {
+            foreach (var e in Effects)
+            {
+                e.CheckSemantics(semantics);
+            }
+        }
+
         public string EmitTheseusCode(int indent = 0)
         {
             return "[[" + Effects.EmitSourceCode(",") + "]]";
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            return Effects.EmitJavaScript(indent, Environment.NewLine);
+            Effects.EmitJavaScript(semantics, cb);
         }
 
     }

@@ -7,13 +7,13 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Location : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter, ISemanticsValidator
+    public class Location : IElement, IComparable, ITheseusCodeEmitter, IJavaScriptCodeEmitter, ISemanticsValidator
     {
         public string Name { get; }
         public string Label { get; }
         public Section Section { get; }
         public IEnumerable<Flag> Flags { get; }
-        public IEnumerable<Item> Items { get; }
+        public IEnumerable<Item> Items { get; private set; }
         public IEnumerable<Door> Doors { get; }
         public IEnumerable<Exit> Exits { get; }
 
@@ -29,12 +29,30 @@ namespace Theseus.Elements
             Exits = exits;
         }
 
-        public void CheckSemantics(ISemantics semantics)
+        public int CompareTo(object obj)
         {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            var otherItem = obj as Location;
+            if (otherItem == null)
+            {
+                return 1;
+            }
+
+            return Name.CompareTo(otherItem.Name);
+        }
+
+        public void BuildSemantics(ISemantics semantics)
+        {
+            semantics.AddLocation(this);
+
             foreach (var item in Items)
             {
                 semantics.AddItem(item);
-                item.CheckSemantics(semantics);
+                item.BuildSemantics(semantics);
             }
             foreach (var flag in Flags)
             {
@@ -48,6 +66,52 @@ namespace Theseus.Elements
             {
                 semantics.AddExit(exit);
             }
+
+            StructureItems();
+        }
+
+        private void StructureItems()
+        {
+            var items = Items.ToList();
+            var root = new Item(-1, "", "", false, null, null, null, null);
+            var current = root;
+
+            if (items.Count > 0 && items[0].Level != 0)
+            {
+                throw new Exception("Invalid level");
+            }
+
+            foreach (var i in items)
+            {
+                if (i.Level < 0)
+                {
+                    throw new Exception("Invalid level");
+                }
+
+                if (i.Level == current.Level + 1)
+                {
+                    current.PutIntoThis(i);
+                }
+                else if (i.Level <= current.Level)
+                {
+                    while (i.Level <= current.Level)
+                    {
+                        current = current.Container;
+                    }
+                    current.PutIntoThis(i);
+                }
+                else
+                {
+                    throw new Exception("Invalid level");
+                }
+                current = i;
+            }
+            Items = root.Contained;
+        }
+
+        public void CheckSemantics(ISemantics semantics)
+        {
+            Section.CheckSemantics(semantics);
         }
 
         public string EmitTheseusCode(int indent = 0)
@@ -61,42 +125,87 @@ namespace Theseus.Elements
             return $"{header}{section}{flags}{items}{doors}{exits}";
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            var doors = Doors.EmitJavaScript(Environment.NewLine).AppendNewLineIfNotEmpty();
-            var items = Items.EmitJavaScript(Environment.NewLine).PrependAndAppendNewLineIfNotEmpty();
+            cb.Add($"var {Name} = (function() {{").In();
 
-            var loc = $"var {Name} = (function() {{".Indent(indent).AppendNewLine();
-            loc += "return {".Indent(indent + 4).AppendNewLine();
-            loc += $"name: \"{Name}\",".Indent(indent + 8).AppendNewLine();
-            loc += $"caption: \"{Label}\",".Indent(indent + 8).AppendNewLine();
-            loc += $"items: \"{string.Join(",", GetItems(false).Concat(GetDoors()))}\",".Indent(indent + 8).AppendNewLine();
-            loc += "getExits: getExits,".Indent(indent + 8).AppendNewLine();
-            loc += "look: look,".Indent(indent + 8).AppendNewLine();
-            loc += "}".Indent(indent + 4).AppendNewLine().AppendNewLine();
+            cb.Add($"var _items = new items();");
+            foreach (var i in GetItems(true))
+            {
+                cb.Add($"_items.add({i});");
+            }
+            cb.Add($"var _characters = new items();");
+            foreach (var c in semantics.Characters)
+            {
+                foreach(var o in c.CharacterOptions)
+                {
+                    if (o.Option == Enumerations.CharacterOption.StartsAt &&
+                        o.Ident == Name)
+                    {
+                        cb.Add($"_characters.add({c.Name});");
+                    }
+                }
+            }
+            foreach (var d in GetDoors())
+            {
+                cb.Add($"_items.add({d});");
+            }
+            cb.Add();
 
-            var getExits = "function getExits() {".Indent(indent + 4).AppendNewLine();
-            getExits += "var _exits = { };".Indent(indent + 8).AppendNewLine();
-            getExits += Exits.EmitJavaScript(indent + 8, Environment.NewLine).AppendNewLineIfNotEmpty();
-            getExits += "return _exits;".Indent(indent + 8).AppendNewLine();
-            getExits += "}".Indent(indent + 4).AppendNewLine().AppendNewLine();
-            loc += getExits;
+            cb.Add("return {").In();
+            cb.Add($"name: \"{Name}\",");
+            cb.Add($"caption: \"{Label}\",");
+            cb.Add("items: _items,");
+            cb.Add("characters: _characters,");
+            cb.Add("getExits: getExits,");
+            cb.Add("look: look,").Out();
+            cb.Add("}");
+            cb.Add();
 
-            var look = "function look() {".Indent(indent + 4).AppendNewLine();
-            look += "_s = \"\";".Indent(indent + 8).AppendNewLine();
-            look += Section.EmitJavaScriptCode(indent + 8);
-            look += "return _s;".Indent(indent + 8).AppendNewLine();
-            look += "}".Indent(indent + 4).AppendNewLine();
-            loc += look;
+            cb.Add("function getExits() {").In();
+            cb.Add("var _exits = { };");
+            Exits.EmitJavaScript(semantics, cb);
+            cb.Add("return _exits;").Out();
+            cb.Add("}");
+            cb.Add();
 
-            loc += "}".Indent(indent).AppendNewLine();
+            cb.Add("function look() {").In();
+            cb.Add("_s = \"\";");
+            Section.EmitJavaScriptCode(semantics, cb);
+            cb.Add("return _s;").Out();
+            cb.Add("}");
+            cb.Add().Out();
 
-            return $"{doors}{items}{loc}";
+            cb.Add("})();");
+            cb.Add();
         }
 
         private IEnumerable<string> GetItems(bool includeHidden)
         {
-            return Items.Where(i => includeHidden || !i.Hidden).Select(i => i.Name);
+            return Items.Where(i => (includeHidden || !i.Hidden)).Select(i => i.Name);
+        }
+
+        private IEnumerable<Item> GetAllItems()
+        {
+            foreach(var i in Items)
+            {
+                foreach (var ii in GetThisItem(i))
+                {
+                    yield return ii;
+                }
+            }
+        }
+
+        private IEnumerable<Item> GetThisItem(Item item)
+        {
+            yield return item;
+            foreach (var i in item.Contained)
+            {
+                foreach (var ii in GetThisItem(i))
+                {
+                    yield return ii;
+                }
+            }
         }
 
         private IEnumerable<string> GetDoors()

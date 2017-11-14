@@ -72,35 +72,57 @@
     <Compile Include="Elements\ItemAction.cs" />
     <Compile Include="Elements\Enumerations\ItemActionType.cs" />
     <Compile Include="Elements\ItemOption.cs" />
+    <Compile Include="Elements\JavaScriptUtils\CodeBuilder.cs" />
+    <Compile Include="Elements\JavaScriptUtils\JavaScriptConstructs.cs" />
     <Compile Include="Elements\Section.cs" />
     <Compile Include="Elements\SectionText.cs" />
     <Compile Include="Elements\SimpleCondition.cs" />
-    <Compile Include="EventArgs\DoorDuplicateEventArgs.cs" />
-    <Compile Include="EventArgs\ExitDuplicateEventArgs.cs" />
-    <Compile Include="EventArgs\FlagDuplicateEventArgs.cs" />
-    <Compile Include="EventArgs\FunctionDuplicateEventArgs.cs" />
-    <Compile Include="EventArgs\ItemDuplicateEventArgs.cs" />
+    <Compile Include="EventArgs\DuplicateEventArgs.cs" />
+    <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Interfaces\ICodeBuilder.cs" />
     <Compile Include="Interfaces\IElement.cs" />
     <Compile Include="Elements\Location.cs" />
     <Compile Include="Interfaces\IJavaScriptCodeEmitter.cs" />
+    <Compile Include="Interfaces\IOrderable.cs" />
     <Compile Include="Interfaces\ISemanticsValidator.cs" />
     <Compile Include="Interfaces\ITheseusCodeEmitter.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Interfaces\ISemantics.cs" />
+    <Compile Include="Semantics\Orderer.cs" />
     <Compile Include="Semantics\SemanticsManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Compiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
+    <None Include="Docs\classes.plantuml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Docs\bnf.txt" />
+    <Content Include="Resources\Framework\collection.js" />
+    <Content Include="Resources\Framework\conv.js" />
+    <Content Include="Resources\Framework\game.js" />
+    <Content Include="Resources\Framework\items.js" />
+    <Content Include="Resources\Framework\keypad.js" />
+    <Content Include="Resources\Framework\state.js" />
+    <Content Include="Resources\Framework\test.js" />
+    <Content Include="Resources\Framework\view.js" />
+    <Content Include="Resources\index.css" />
+    <Content Include="Resources\index.html" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir $(ProjectDir)$(OutDir)Resources
+mkdir $(ProjectDir)$(OutDir)Resources\Framework
+copy $(SolutionDir)Theseus\Resources\index.* $(ProjectDir)$(OutDir)Resources\
+copy $(SolutionDir)Theseus\Resources\Framework\*.js $(ProjectDir)$(OutDir)Resources\Framework\
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

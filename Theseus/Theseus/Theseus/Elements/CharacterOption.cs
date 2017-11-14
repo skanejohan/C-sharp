@@ -41,7 +41,7 @@ namespace Theseus.Elements
             }
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public string EmitJavaScriptCode(ISemantics semantics, int indent = 0)
         {
             return ""; // Not used - code is emitted from Character
         }

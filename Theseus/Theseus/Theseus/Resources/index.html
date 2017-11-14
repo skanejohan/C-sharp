@@ -1,0 +1,109 @@
+﻿<html>
+  <meta charset="UTF-8">
+  <head>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css?family=Caudex" rel="stylesheet">
+    <script type="text/javascript" src="Framework\game.js"></script>
+    <script type="text/javascript" src="Framework\view.js"></script>
+    <script type="text/javascript" src="Framework\keypad.js"></script>
+    <script type="text/javascript" src="Framework\state.js"></script>
+    <script type="text/javascript" src="Framework\conv.js"></script>
+    <script type="text/javascript" src="Framework\collection.js"></script>
+    <script type="text/javascript" src="Framework\items.js"></script>
+
+    <script type="text/javascript" src="Game\\{gameName}.js"></script>
+
+    <script type="text/javascript" src="Framework\test.js"></script>
+    <script type="text/javascript">
+        /* Credits:
+            Font: Caudex, https://fonts.google.com/specimen/Caudex
+        */
+        function startGame() {
+            context.initialize({startposition}, "Welcome to the game");
+            context.characters().push(uncleAilbert); // TODO HOW???
+            view.initialize(
+                document.getElementById("locationDiv"),
+                document.getElementById("messageDiv"),
+                document.getElementById("locationItemsDiv"),
+                document.getElementById("carriedItemsDiv"),
+                document.getElementById("movementDiv"),
+                document.getElementById("northBtn"),
+                document.getElementById("eastBtn"),
+                document.getElementById("southBtn"),
+                document.getElementById("westBtn"),
+                document.getElementById('conversationContainer'),
+                document.getElementById('conversationDiv'),
+                document.getElementById('settingsContainer'),
+                document.getElementById('settingsDiv'));
+            view.update(context);
+        };
+    </script>
+  </head>
+  <body onload="startGame()">
+    <div class="container">
+      <div class="left">
+        <div id="messageDiv">
+        </div>
+      </div>
+      <div class="centre">
+        <div id="locationDiv" class="centretop">
+        </div>
+        <div id="movementDiv" class="centrebottom">
+        </div>
+      </div>
+      <div class="right">
+        <div id="locationItemsDiv" class="righttop">
+        </div>
+        <div id="carriedItemsDiv" class="rightmiddle">
+        </div>
+      </div>
+    </div>
+
+    <div id="keypadContainer" class="modal">
+        <div class="keypad"> 
+            <h2>Enter code</h2>
+            <button id="btn1">1</button>
+            <button id="btn2">2</button>
+            <button id="btn3">3</button><br>
+            <button id="btn4">4</button>
+            <button id="btn5">5</button>
+            <button id="btn6">6</button><br>
+            <button id="btn7">7</button>
+            <button id="btn8">8</button>
+            <button id="btn9">9</button><br>
+            <button id="btn0">0</button>
+            <p id='code'>Code: </p>
+        </div>
+    </div>  
+    <div id="conversationContainer" class="modal">
+        <div id="conversationDiv" class="conversation"> 
+        </div>
+    </div>  
+    <div id="settingsContainer" class="modal">
+        <div id="settingsDiv" class="conversation"><!-- TODO change class --> 
+        </div>
+    </div>  
+    <script type="text/javascript">
+      keypad.initialize(
+        document.getElementById('keypadContainer'), 
+        document.getElementById('code'),
+        document.getElementById('btn0'),
+        document.getElementById('btn1'),
+        document.getElementById('btn2'),
+        document.getElementById('btn3'),
+        document.getElementById('btn4'),
+        document.getElementById('btn5'),
+        document.getElementById('btn6'),
+        document.getElementById('btn7'),
+        document.getElementById('btn8'),
+        document.getElementById('btn9')); 
+      conversation.initialize(
+        view.conversation.show,
+        view.conversation.addStatement,
+        view.conversation.addResponse,
+        view.conversation.clear,
+        view.conversation.hide);
+    </script>
+
+  </body>
+</html>

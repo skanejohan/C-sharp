@@ -311,7 +311,9 @@ namespace Theseus.Parser
             .Or(RequiresKeyParser);
 
         internal static readonly Parser<ItemOption> ItemOptionParser =
-            DoorOptionParser.Or(Parse.String("container").Return(new ItemOption(Enum.ItemOptionType.Container)));
+            DoorOptionParser
+            .Or(Parse.String("container").Return(new ItemOption(Enum.ItemOptionType.Container)))
+            .Or(Parse.String("fixed").Return(new ItemOption(Enum.ItemOptionType.Fixed)));
 
         internal static readonly Parser<int> PlusParser =
             from s in Parse.Char('+').Many().Text().Token()
@@ -338,10 +340,10 @@ namespace Theseus.Parser
             select new Door(name, label, options);
 
         internal static Parser<Enum.Direction> DirectionParser =
-            Parse.String("north").Return(Enum.Direction.North)
-            .Or(Parse.String("east").Return(Enum.Direction.East))
-            .Or(Parse.String("south").Return(Enum.Direction.South))
-            .Or(Parse.String("west").Return(Enum.Direction.West));
+            Parse.String("north").Return(Enum.Direction.N)
+            .Or(Parse.String("east").Return(Enum.Direction.E))
+            .Or(Parse.String("south").Return(Enum.Direction.S))
+            .Or(Parse.String("west").Return(Enum.Direction.W));
 
         internal static readonly Parser<Exit> ExitParser =
             from _1 in Parse.String("exit").Token()

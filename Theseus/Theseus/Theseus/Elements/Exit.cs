@@ -45,21 +45,36 @@ namespace Theseus.Elements
         public string EmitTheseusCode(int indent = 0)
         {
             var door = Door == "" ? "" : $" via {Door}";
-            return $"exit {Direction.ToString().ToLower()} to {Target}{door}".Indent(indent).AppendNewLine();
+            var dir = "";
+            switch (Direction)
+            {
+                case Direction.N:
+                    dir = "north";
+                    break;
+                case Direction.E:
+                    dir = "east";
+                    break;
+                case Direction.S:
+                    dir = "south";
+                    break;
+                case Direction.W:
+                    dir = "west";
+                    break;
+            }
+            return $"exit {dir} to {Target}{door}".Indent(indent).AppendNewLine();
         }
 
-        public string EmitJavaScriptCode(int indent = 0)
+        public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
             if (Door == "")
             {
-                return $"_exits.{Direction} = {Target};".Indent(indent);
+                cb.Add($"_exits.{Direction} = {Target};");
             }
             else
             {
-                var s = $"if ({Door}.mode == DoorMode.Open) {{".Indent(indent).AppendNewLine();
-                s += $"_exits.{Direction} = {Target};".Indent(indent + 4).AppendNewLine();
-                s += "}".Indent(indent);
-                return s;
+                cb.Add($"if (!{Door}.isClosed()) {{").In();
+                cb.Add($"_exits.{Direction} = {Target};").Out();
+                cb.Add("}");
             }
         }
     }
