@@ -42,11 +42,20 @@ doorOption ::= "openable"
 		   |   "opensWhenPicked"
 		   |   "requires" "key" identifier
 		   
-itemAction ::= "openedOk" "=" section
-           |   "openFailed" "=" section
-           |   "pickedOk" "=" section
-           |   "pickFailed" "=" section
+itemAction ::= "afterDrop" "=" section
+           |   "afterDropOnce" "=" section
            |   "afterTake" "=" section
+           |   "afterTakeOnce" "=" section
+           |   "afterClose" "=" section
+           |   "afterCloseOnce" "=" section
+           |   "afterOpen" "=" section
+           |   "afterOpenOnce" "=" section
+           |   "afterLock" "=" section
+           |   "afterLockOnce" "=" section
+           |   "afterUnlock" "=" section
+           |   "afterUnlockOnce" "=" section
+           |   "afterPick" "=" section
+           |   "afterPickOnce" "=" section
 
 function ::= "function" identifier """ string """ ["hidden"] {"-"} section
 

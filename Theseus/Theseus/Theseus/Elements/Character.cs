@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Theseus.Elements.Extensions;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
@@ -27,6 +28,10 @@ namespace Theseus.Elements
         public void BuildSemantics(ISemantics semantics)
         {
             semantics.AddCharacter(this);
+            foreach(var c in Conversations)
+            {
+                c.BuildSemantics(semantics);
+            }
         }
 
         public void CheckSemantics(ISemantics semantics)
@@ -43,60 +48,21 @@ namespace Theseus.Elements
 
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            cb.Add($"var {Name} = (function() {{").In();
-            cb.Add($"var isVisible = false;"); // TODO add visibility
-            cb.Add($"var location = {getLocation()};");
+            var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
+            var location = getLocation();
+            var conversation = getConversation();
 
-            cb.Add();
-            cb.Add("function getVerbs(context) {").In();
-            cb.Add("verbs = new collection();");
-            cb.Add("verbs.add(\"Examine\", examine);");
-            var conv = getConversation();
-            if (conv != "")
-            {
-                cb.Add($"verbs.add(\"Talk\", {conv});");
-            }
-            cb.Add("return verbs;").Out();
-            cb.Add("}");
-            cb.Add();
-
-            cb.Add("return {").In();
+            cb.Add($"{gName}.{Name} = new THESEUS.Character({{").In();
             cb.Add($"caption: \"{Label}\",");
-            cb.Add("getVerbs: getVerbs,");
-            cb.Add("update: update,");
-            cb.Add("examine: examine,");
-            cb.Add("isVisible: () => isVisible,");
-            cb.Add("setVisible: value => isVisible = value,").Out();
-            cb.Add("}");
-            cb.Add();
-
-            cb.Add("function update() {").In();
-            var follows = CharacterOptions.FirstOrDefault(co => co.Option == Enumerations.CharacterOption.FollowsPlayerBehind);
-            if (follows != null)
-            {
-                cb.Add("if (location != null) {").In();
-                cb.Add($"location.characters.remove({Name})").Out();
-                cb.Add("}");
-                cb.Add($"location = context.historicLocation({follows.StepsBehind});");
-                cb.Add("if (location != null) {").In();
-                cb.Add($"location.characters.add({Name});").Out();
-                cb.Add("}");
-            }
-            cb.Out();
-            cb.Add("}");
-            cb.Add();
-
-            cb.Add("function examine() {").In();
-            cb.Add("_s = \"\";");
+            cb.Add(true, $"isVisible: false,"); // TODO add visibility
+            cb.Add(location != "null", $"location: {location};");
+            cb.Add(conversation != "", $"conversation: {gName}.{conversation},");
+            cb.Add("examine: function() {").In();
+            cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("context.setMessage(_s);").Out();
-            cb.Add("}");
-            cb.Add();
-
-            Conversations.EmitJavaScript(semantics, cb);
-
-            cb.Out();
-            cb.Add("})();");
+            cb.Add("}").Out();
+            cb.Add("});");
         }
 
         private string getLocation()

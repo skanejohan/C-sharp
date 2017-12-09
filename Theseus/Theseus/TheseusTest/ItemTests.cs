@@ -53,7 +53,7 @@ namespace TheseusTest
         public void Item1ParsesOK()
         {
             var actual = TheseusParser.ItemParser.Parse("+ item metalBox \"metal box\" container pickable opensWhenPicked requires key paperClip\n" +
-                "-------------------\nMost of the color...\n	pickedOk=Using the paper clip...");
+                "-------------------\nMost of the color...\n	afterPick=Using the paper clip...");
             var expected = new Item(1, "metalBox", "metal box", false,
                 new List<ItemOption>
                 {
@@ -66,7 +66,7 @@ namespace TheseusTest
                 new List<Function>(),
                 new List<ItemAction>
                 {
-                    new ItemAction(ItemActionType.PickedOk, new Section(new SectionText("Using the paper clip...")))
+                    new ItemAction(ItemActionType.AfterPick, new Section(new SectionText("Using the paper clip...")))
                 });
             AssertEqual(expected, actual);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Theseus.Elements.Extensions;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
@@ -127,57 +128,25 @@ namespace Theseus.Elements
 
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            cb.Add($"var {Name} = (function() {{").In();
+            var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
 
-            cb.Add($"var _items = new items();");
-            foreach (var i in GetItems(true))
-            {
-                cb.Add($"_items.add({i});");
-            }
-            cb.Add($"var _characters = new items();");
-            foreach (var c in semantics.Characters)
-            {
-                foreach(var o in c.CharacterOptions)
-                {
-                    if (o.Option == Enumerations.CharacterOption.StartsAt &&
-                        o.Ident == Name)
-                    {
-                        cb.Add($"_characters.add({c.Name});");
-                    }
-                }
-            }
-            foreach (var d in GetDoors())
-            {
-                cb.Add($"_items.add({d});");
-            }
-            cb.Add();
-
-            cb.Add("return {").In();
-            cb.Add($"name: \"{Name}\",");
+            var itemsAndDoors = GetItems(true).Concat(GetDoors());
+            cb.Add($"{gName}.{Name} = new THESEUS.Location({{").In();
             cb.Add($"caption: \"{Label}\",");
-            cb.Add("items: _items,");
-            cb.Add("characters: _characters,");
-            cb.Add("getExits: getExits,");
-            cb.Add("look: look,").Out();
-            cb.Add("}");
-            cb.Add();
+            cb.Add(itemsAndDoors.Count() > 0, $"containedItems: [{string.Join(", ", itemsAndDoors.Select(s => gName + "." + s))}],");
 
-            cb.Add("function getExits() {").In();
-            cb.Add("var _exits = { };");
-            Exits.EmitJavaScript(semantics, cb);
-            cb.Add("return _exits;").Out();
-            cb.Add("}");
-            cb.Add();
-
-            cb.Add("function look() {").In();
-            cb.Add("_s = \"\";");
+            cb.Add("look: function(context) {").In();
+            cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("return _s;").Out();
-            cb.Add("}");
-            cb.Add().Out();
+            cb.Add("},");
 
-            cb.Add("})();");
-            cb.Add();
+            cb.Add("getExits: function(exits) {").In();
+            Exits.EmitJavaScript(semantics, cb);
+            cb.Out();
+            cb.Add("},").Out();
+            cb.Add("});");
+            return;
         }
 
         private IEnumerable<string> GetItems(bool includeHidden)

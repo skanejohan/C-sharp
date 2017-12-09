@@ -1,9 +1,9 @@
-character uncleAilbert "Uncle Ailbert" starts at fictionSection,hidden,follows player 1 step behind,conversation is uncleTalk
------------------------------------------------------------------------------------------------------------------------------
+character uncleAilbert "Uncle Ailbert" starts at fictionSection,hidden,follows player 1 step behind,conversation is uncleAilbertConversation
+--------------------------------------------------------------------------------------------------------------------------------------------
 Your beloved uncle is getting old but he still looks at you the way he did when you were young and he told you stories from the Scottish heaths, the smell of whisky ever present in his breath.
 
-  conversation uncleTalk
-  ----------------------
+  conversation uncleAilbertConversation
+  -------------------------------------
   statement 1: Hello Fiona, my dear!
   response 2: Hello uncle Ailbert, how are you today?
   statement 1 has response 2

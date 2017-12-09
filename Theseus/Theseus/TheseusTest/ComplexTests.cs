@@ -61,7 +61,8 @@ namespace TheseusTest
 
         private string LoadFile(string fileName)
         {
-            return File.ReadAllText(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\" + fileName);
+            var f = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\" + fileName;
+            return File.ReadAllText(f);
         }
 
         private void VerifyLocation(string fileName, string locationName)

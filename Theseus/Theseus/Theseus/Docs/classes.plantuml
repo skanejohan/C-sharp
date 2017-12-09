@@ -1,0 +1,15 @@
+@startuml
+IElement <|-- all_elements
+ISemantics <|-- SemanticsManager
+ISemanticsValidator <|-- some_elements
+TheseusParser .. Class08
+Compiler --> "many" Document
+SemanticsManager --> "many" Item
+SemanticsManager --> "many" Flag
+SemanticsManager --> "many" Door
+SemanticsManager --> "many" Exit
+SemanticsManager --> "many" Function
+SemanticsManager --> "many" Location
+SemanticsManager <-- Compiler
+Compiler <-- Program
+@enduml

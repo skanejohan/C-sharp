@@ -1,5 +1,6 @@
 ﻿using System;
 using Theseus.Elements.Enumerations;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
@@ -64,23 +65,50 @@ namespace Theseus.Elements
 
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
+            var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
+            string obj = "";
+            string fun = "";
+            if (Object.Contains("."))
+            {
+                obj = Object.Split('.')[0];
+                fun = Object.Split('.')[1];
+            }
+            else
+            {
+                obj = Object;
+            }
+
             switch (Type)
             {
                 // TODO additional eeffect types
                 case EffectType.Set:
-                    cb.Add($"context.flags().add(Flag.{Object});");
+                    cb.Add($"context.flags().add({gName}.Flag.{Object});");
                     break;
                 case EffectType.Clear:
-                    cb.Add($"context.flags().delete(Flag.{Object});");
+                    cb.Add($"context.flags().delete({gName}.Flag.{Object});");
                     break;
                 case EffectType.Show:
-                    cb.Add($"{Object}.setVisible(true);");
+                    if (semantics.HasFunctionByName(fun))
+                    {
+                        cb.Add($"{gName}.{obj}.setFunctionVisible(\"{fun}\", true);");
+                    }
+                    else
+                    {
+                        cb.Add($"{gName}.{Object}.setVisible(true);");
+                    }
                     break;
                 case EffectType.Hide:
-                    cb.Add($"{Object}.setVisible(false);");
+                    if (semantics.HasFunctionByName(fun))
+                    {
+                        cb.Add($"{gName}.{obj}.setFunctionVisible(\"{fun}\", false);");
+                    }
+                    else
+                    {
+                        cb.Add($"{gName}.{Object}.setVisible(false);");
+                    }
                     break;
                 case EffectType.MoveTo:
-                    cb.Add($"context.setLocation({Object})");
+                    cb.Add($"context.setLocation({gName}.{Object})");
                     break;
             }
         }

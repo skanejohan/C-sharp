@@ -54,7 +54,7 @@ namespace Theseus.Elements
         public override void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
             Condition.EmitJavaScriptCode(semantics, cb);
-            cb.Add(" || ");
+            cb.Append(" || ");
             Condition2.EmitJavaScriptCode(semantics, cb);
         }
     }
@@ -82,7 +82,7 @@ namespace Theseus.Elements
         public override void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
             Condition.EmitJavaScriptCode(semantics, cb);
-            cb.Add(" && ");
+            cb.Append(" && ");
             Condition2.EmitJavaScriptCode(semantics, cb);
         }
     }
@@ -100,7 +100,7 @@ namespace Theseus.Elements
 
         public override void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            cb.Add("!");
+            cb.Append("!");
             Condition.EmitJavaScriptCode(semantics, cb);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Theseus.Elements.Enumerations;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
@@ -66,14 +67,15 @@ namespace Theseus.Elements
 
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
+            var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
             if (Door == "")
             {
-                cb.Add($"_exits.{Direction} = {Target};");
+                cb.Add($"exits.{Direction} = {gName}.{Target};");
             }
             else
             {
-                cb.Add($"if (!{Door}.isClosed()) {{").In();
-                cb.Add($"_exits.{Direction} = {Target};").Out();
+                cb.Add($"if (!{gName}.{Door}.isClosed()) {{").In();
+                cb.Add($"exits.{Direction} = {gName}.{Target};").Out();
                 cb.Add("}");
             }
         }

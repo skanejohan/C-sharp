@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Theseus.Elements.Extensions;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Conversation : IElement, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Conversation : IElement, ISemanticsValidator, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public string Name { get; }
         public IEnumerable<ConversationItem> ConversationItems { get; }
@@ -25,11 +26,23 @@ namespace Theseus.Elements
             return $"{header}{items}";
         }
 
+        public void BuildSemantics(ISemantics semantics)
+        {
+            semantics.AddConversation(this);
+        }
+
+        public void CheckSemantics(ISemantics semantics)
+        {
+        }
+
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            cb.Add($"function {Name}() {{").In();
+            var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
+
+            cb.Add($"{gName}.{Name} = function() {{").In();
+            cb.Add("THESEUS.conversation.clear();");
             ConversationItems.EmitJavaScript(semantics, cb);
-            cb.Add("conversation.startConversation(1);").Out();
+            cb.Add("THESEUS.conversation.startConversation(1);").Out();
             cb.Add("}");
         }
     }

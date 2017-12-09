@@ -9,13 +9,9 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
-    public class Item : IElement, IComparable, ISemanticsValidator, IOrderable, ITheseusCodeEmitter, IJavaScriptCodeEmitter
+    public class Item : BaseItem, IElement, IComparable, ISemanticsValidator, IOrderable, ITheseusCodeEmitter, IJavaScriptCodeEmitter
     {
         public int Level { get; }
-        public string Name { get; }
-        public string Label { get; }
-        public bool Hidden { get; }
-        public IEnumerable<ItemOption> Options { get; }
         public Section Section { get; }
         public IEnumerable<Function> Functions { get; }
         public IEnumerable<ItemAction> Actions { get; }
@@ -25,16 +21,13 @@ namespace Theseus.Elements
         public int Order { get; set; }
 
         public Item(int level, string name, string label, bool hidden, IEnumerable<ItemOption> options,
-            Section section, IEnumerable<Function> functions, IEnumerable<ItemAction> actions)
+            Section section, IEnumerable<Function> functions, IEnumerable<ItemAction> actions) :
+            base(name, label, hidden, options)
         {
             Level = level;
-            Name = name;
-            Label = label;
-            Hidden = hidden;
-            Options = options?.ToList();
-            Section = section;
-            Functions = functions?.ToList();
-            Actions = actions?.ToList();
+            Section = section != null ? section : new Section(new List<IElement>());
+            Functions = functions != null ? functions.ToList() : new List<Function>();
+            Actions = actions != null ? actions.ToList() : new List<ItemAction>();
             containedItems = new List<Item>();
         }
 
@@ -97,339 +90,82 @@ namespace Theseus.Elements
 
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
-            cb.Add($"var {Name} = (function() {{").In();
+            var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
+            var hasItems = containedItems.Count > 0;
 
-            // Variable declarations
-            cb.Add($"var isVisible = {JS.Bool(!Hidden)};");
-            if (HasOptionType(ItemOptionType.Openable) || 
-                HasOptionType(ItemOptionType.Lockable) ||
-                HasOptionType(ItemOptionType.Pickable))
-            {
-                var closed = HasOptionType(ItemOptionType.Closed) || HasOptionType(ItemOptionType.Locked);
-                cb.Add($"var isOpen = {JS.Bool(!closed)};");
-                cb.Add($"var hasBeenOpen = {JS.Bool(!closed)};");
-                cb.Add($"var isClosed = {JS.Bool(closed)};");
-                cb.Add($"var hasBeenClosed = {JS.Bool(closed)};");
-            }
-            if (HasOptionType(ItemOptionType.Lockable) ||
-                HasOptionType(ItemOptionType.Pickable))
-            {
-                var locked = HasOptionType(ItemOptionType.Locked);
-                cb.Add($"var isLocked = {JS.Bool(locked)};");
-                cb.Add($"var hasBeenLocked = {JS.Bool(locked)};");
-                cb.Add($"var isUnlocked = {JS.Bool(!locked)};");
-                cb.Add($"var hasBeenUnlocked = {JS.Bool(!locked)};");
-                cb.Add($"var isPicked = false;");
-                cb.Add($"var hasBeenPicked = false;");
-            }
-            cb.Add();
-            cb.Add("var additionalVerbs = new collection();");
+            cb.Add($"{gName}.{Name} = new THESEUS.Item({{").In();
+            cb.Add($"caption: \"{Label}\",");
+            cb.Add(Hidden, $"isVisible: false,");
+            cb.Add(IsOpenable(), $"isOpenable: true,");
+            cb.Add(IsClosed(), $"isClosed: true,");
+            cb.Add(IsLockable(), $"isLockable: true,");
+            cb.Add(IsPickable(), $"isPickable: true,");
+            cb.Add(IsLocked(), $"isLocked: true,");
+            cb.Add(RequiresKey(), $"requiredKey: {gName}.{GetRequiredKey()},");
+            cb.Add(RequiresCombination(), $"requiredCombination: \"{GetRequiredCombination()}\",");
+            cb.Add(IsFixed(), $"isFixed: true,");
 
-            cb.Add();
-            cb.Add($"var containedItems = new items();");
-            foreach (var i in containedItems)
-            {
-                cb.Add($"containedItems.add({i.Name});");
-            }
-            cb.Add();
+            cb.Add(hasItems, $"containedItems: [{string.Join(", ", containedItems.Select(i => $"{gName}.{i.Name}"))}],");
 
-            // The getVerbs() function
-            cb.Add("function getVerbs(context) {").In();
-            cb.Add("verbs = new collection();");
-            cb.Add("verbs.add(\"Examine\", examine);");
-            if (!HasOptionType(ItemOptionType.Fixed))
-            {
-                cb.Add("if (context.inventory().has(this)) {").In();
-                cb.Add("verbs.add(\"Drop\", drop);").Out();
-                cb.Add("}");
-                cb.Add("else {").In();
-                cb.Add("verbs.add(\"Take\", take);").Out();
-                cb.Add("}");
-            }
-            if (HasOptionType(ItemOptionType.Openable) || 
-                HasOptionType(ItemOptionType.Lockable) ||
-                HasOptionType(ItemOptionType.Pickable))
-            {
-                cb.Add("if (!isClosed) {").In();
-                cb.Add("verbs.add(\"Close\", close);").Out();
-                cb.Add("}");
-                if (HasOptionType(ItemOptionType.Lockable) ||
-                    HasOptionType(ItemOptionType.Pickable))
-                {
-                    cb.Add("if (isClosed && !isLocked) {").In();
-                }
-                else
-                {
-                    cb.Add("if (isClosed) {").In();
-                }
-                cb.Add("verbs.add(\"Open\", open);").Out();
-                cb.Add("}");
-            }
-            if (HasOptionType(ItemOptionType.Lockable) &&
-                HasOptionType(ItemOptionType.RequiresKey))
-            {
-                cb.Add($"if (!isLocked && context.inventory().has({GetRequiredKey()})) {{").In();
-                cb.Add("verbs.add(\"Lock\", lock);").Out();
-                cb.Add("}");
-                cb.Add($"if (isLocked && context.inventory().has({GetRequiredKey()})) {{").In();
-                cb.Add("verbs.add(\"Unlock\", unlock);").Out();
-                cb.Add("}");
-            }
-            if (HasOptionType(ItemOptionType.Pickable) &&
-                HasOptionType(ItemOptionType.RequiresKey))
-            {
-                cb.Add($"if (isLocked && context.inventory().has({GetRequiredKey()})) {{").In();
-                cb.Add("verbs.add(\"Pick\", pick);").Out();
-                cb.Add("}");
-            }
-            if (HasOptionType(ItemOptionType.Lockable) &&
-                HasOptionType(ItemOptionType.RequiresCombination))
-            {
-                cb.Add("if (isClosed && !isLocked) {").In();
-                cb.Add("verbs.add(\"Lock\", lock);").Out();
-                cb.Add("}");
-                cb.Add("if (isLocked) {").In();
-                cb.Add("verbs.add(\"Enter combination\", enterCombination);").Out();
-                cb.Add("}");
-            }
-
-            foreach (var fn in Functions)
-            {
-                cb.Add($"if ({fn.Name}.isVisible()) {{ verbs.add(\"{fn.Label}\", {fn.Name}); }}");
-            }
-
-            cb.Add("return verbs;").Out();
-            cb.Add("}");
-            cb.Add();
-
-            // The examine() functions
-            cb.Add("function examine(context) {").In();
-            cb.Add("_s = \"\";");
+            cb.Add("examine: function(context) {").In();
+            cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("context.setMessage(_s);").Out();
-            cb.Add("}");
-            cb.Add();
+            cb.Add("},");
 
-            // The drop(), afterDrop(), take() and afterTake() functions
-            if (!HasOptionType(ItemOptionType.Fixed))
-            {
-                cb.Add("function drop(context) {").In();
-                cb.Add($"context.inventory().remove({Name});");
-                cb.Add($"context.location().items.add({Name});");
-                cb.Add($"context.setMessage(\"You drop the {Label}\");");
-                if (HasAction(ItemActionType.AfterDrop))
-                {
-                    cb.Add("if (afterDrop.isVisible()) {").In();
-                    cb.Add("afterDrop(context);").Out();
-                    cb.Add("}");
-                }
-                cb.Out();
-                cb.Add("}");
-                cb.Add();
-
-                var afterDropAction = GetAction(ItemActionType.AfterDrop);
-                if (afterDropAction != null)
-                {
-                    cb.Add("function afterDrop(context) {").In();
-                    cb.Add("var _s = \"\"");
-                    afterDropAction.Section.EmitJavaScriptCode(semantics, cb);
-                    cb.Add("if (_s != \"\") {").In();
-                    cb.Add("context.setMessage(_s);").Out();
-                    cb.Add("}").Out();
-                    cb.Add("}");
-                    cb.Add("afterDrop.visible = true;");
-                    cb.Add("afterDrop.isVisible = () => isVisible;");
-                    cb.Add("afterDrop.setVisible = value => isVisible = value;");
-                }
-
-                var afterTakeAction = GetAction(ItemActionType.AfterTake);
-                if (afterTakeAction != null)
-                {
-                    cb.Add("function afterTake(context) {").In();
-                    cb.Add("var _s = \"\"");
-                    afterTakeAction.Section.EmitJavaScriptCode(semantics, cb);
-                    cb.Add("if (_s != \"\") {").In();
-                    cb.Add("context.setMessage(_s);").Out();
-                    cb.Add("}").Out();
-                    cb.Add("}");
-                    cb.Add("afterTake.visible = true;");
-                    cb.Add("afterTake.isVisible = () => isVisible;");
-                    cb.Add("afterTake.setVisible = value => isVisible = value;");
-                }
-
-                cb.Add("function take(context) {").In();
-                cb.Add($"context.inventory().remove({Name});");  // If it is contained in a carried object
-                cb.Add($"context.inventory().add({Name});");
-                cb.Add($"context.historicInventory().add({Name});");
-                cb.Add($"context.location().items.remove({Name});");
-                cb.Add($"context.setMessage(\"You take the {Label}\");");
-                if (HasAction(ItemActionType.AfterTake))
-                {
-                    cb.Add("if (afterTake.isVisible()) {").In();
-                    cb.Add("afterTake(context);").Out();
-                    cb.Add("}");
-                }
-                cb.Out();
-                cb.Add("}");
-                cb.Add();
-            }
-
-            // The open() and close() functions
-            if (HasOptionType(ItemOptionType.Openable) || 
-                HasOptionType(ItemOptionType.Lockable) ||
-                HasOptionType(ItemOptionType.Pickable))
-            {
-                cb.Add("function open(context) {").In();
-                cb.Add($"isOpen = true;");
-                cb.Add($"isClosed = false;");
-                cb.Add($"hasBeenOpen = true;");
-                cb.Add($"context.setMessage(\"You open the {Label}\");").Out();
-                cb.Add("}");
-                cb.Add();
-
-                cb.Add("function close(context) {").In();
-                cb.Add($"isOpen = false;");
-                cb.Add($"isClosed = true;");
-                cb.Add($"hasBeenClosed = true;");
-                cb.Add($"context.setMessage(\"You close the {Label}\");").Out();
-                cb.Add("}");
-                cb.Add();
-            }
-
-            // The pick(), lock(), enterCombination() and unlock() functions
-            if (HasOptionType(ItemOptionType.Lockable))
-            {
-                cb.Add("function lock(context) {").In();
-                cb.Add($"isLocked = true;");
-                cb.Add($"hasBeenLocked = true;");
-                cb.Add($"context.setMessage(\"You lock the {Label}\");").Out();
-                cb.Add("}");
-                cb.Add();
-
-                if (HasOptionType(ItemOptionType.RequiresCombination))
-                {
-                    cb.Add("function enterCombination(context, combination) {").In();
-                    cb.Add($"keypad.enterCombination(safe, \"{GetRequiredCombination()}\", combination,").In();
-                    cb.Add("() => {").In();
-                    cb.Add("isLocked = false;");
-                    cb.Add("hasBeenUnlocked = true;");
-                    cb.Add("context.setMessage(\"You enter the correct combination and unlock the door.\");");
-                    cb.Add("view.update(context);").Out();
-                    cb.Add("},");
-                    cb.Add("() => {").In();
-                    cb.Add("context.setMessage(\"For a moment there, you thought you remembered the code. A futile attempt.\");");
-                    cb.Add("view.update(context);").Out();
-                    cb.Add("});").Out();
-                    cb.Add("}").Out();
-                    cb.Add();
-                }
-                else
-                {
-                    cb.Add("function unlock(context) {").In();
-                    cb.Add($"isLocked = false;");
-                    cb.Add("hasBeenUnlocked = true;");
-                    cb.Add($"context.setMessage(\"You unlock the {Label}\");").Out();
-                    cb.Add("}");
-                    cb.Add();
-                }
-            }
-            if (HasOptionType(ItemOptionType.Pickable))
-            {
-                
-                cb.Add("function pick(context) {").In();
-                cb.Add($"isLocked = false;");
-                cb.Add("hasBeenUnlocked = true;");
-                cb.Add($"isPicked = false;");
-                cb.Add("hasBeenPicked = true;");
-                cb.Add($"context.setMessage(\"Using the {semantics.ItemByName(GetRequiredKey()).Label}, you manage to pick the {Label}\");").Out();
-                cb.Add("}");
-                cb.Add();
-            }
+            ProcessAfterAction(ItemActionType.AfterDrop, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterDropOnce, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterTake, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterTakeOnce, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterClose, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterCloseOnce, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterOpen, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterOpenOnce, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterLock, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterLockOnce, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterUnlock, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterUnlockOnce, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterPick, semantics, cb);
+            ProcessAfterAction(ItemActionType.AfterPickOnce, semantics, cb);
 
             Functions.EmitJavaScript(semantics, cb);
 
-            cb.Add("return {").In();
-            cb.Add($"caption: \"{Label}\",");
-            cb.Add($"isVisible: () => isVisible,");
-            cb.Add($"setVisible: value => isVisible = value,");
-            cb.Add($"containedItems: containedItems,");
-            cb.Add($"getVerbs: getVerbs,");
-            if (HasOptionType(ItemOptionType.Openable) ||
-                HasOptionType(ItemOptionType.Lockable) ||
-                HasOptionType(ItemOptionType.Pickable))
+            if (Functions.Count() > 0)
             {
-                cb.Add($"isOpen: () => isOpen,");
-                cb.Add($"hasBeenOpen: () => hasBeenOpen,");
-                cb.Add($"isClosed: () => isClosed,");
-                cb.Add($"hasBeenClosed: () => hasBeenClosed,");
+                cb.Add("getAdditionalVerbs: function(verbs) {").In();
+                foreach (var f in Functions)
+                {
+                    cb.Add($"if ({gName}.{this.Name}.functionIsVisible(\"{f.Name}\")) {{").In();
+                    cb.Add($"verbs.add(\"{f.Label}\", this.{f.Name});").Out();
+                    cb.Add("}");
+                }
+                cb.Out();
+                cb.Add("},");
             }
-            if (HasOptionType(ItemOptionType.Lockable) ||
-                HasOptionType(ItemOptionType.Pickable))
-            {
-                cb.Add($"isLocked: () => isLocked,");
-                cb.Add($"hasBeenLocked: () => hasBeenLocked,");
-                cb.Add($"isUnlocked: () => isUnlocked,");
-                cb.Add($"hasBeenUnlocked: () => hasBeenUnlocked,");
-                cb.Add($"isPicked: () => isPicked,");
-                cb.Add($"hasBeenPicked: () => hasBeenPicked,");
-            }
-            foreach (var fn in Functions)
-            {
-                cb.Add($"{fn.Name}: {fn.Name},");
-            }
-            cb.Out();
-            cb.Add("}").Out();
 
-            cb.Add("})();");
-            cb.Add();
+            cb.Out();
+            cb.Add("});");
+            foreach (var f in Functions)
+            {
+                cb.Add($"{gName}.{this.Name}.setFunctionVisible(\"{f.Name}\", {JS.Bool(!f.Hidden)});");
+            }
         }
 
         private List<Item> containedItems;
 
-        private List<string> GetVerbs(bool includeHidden)
+        private void ProcessAfterAction(ItemActionType actionType, ISemantics semantics, ICodeBuilder cb)
         {
-            var result = new List<string>();
-            result.Add("examine");
-            if (Options.Any(i => i.Type == Enumerations.ItemOptionType.Openable))
+            var action = Actions.FirstOrDefault(i => i.Type == actionType);
+            if (action != null)
             {
-                result.Add("open");
+                cb.Add($"{actionType.ToString().ToCamelCase()}: function(context) {{").In();
+                cb.Add("var _s = \"\"");
+                action.Section.EmitJavaScriptCode(semantics, cb);
+                cb.Add("if (_s != \"\") {").In();
+                cb.Add("context.setMessage(_s);").Out();
+                cb.Add("}").Out();
+                cb.Add("},");
             }
-            foreach (var fun in Functions)
-            {
-                if (includeHidden || !fun.Hidden)
-                    result.Add(fun.Name);
-            }
-            return result;
-        }
-
-        private bool HasOptionType(Enumerations.ItemOptionType optionType)
-        {
-            return Options.Any(i => i.Type == optionType);
-        }
-
-        private ItemAction GetAction(Enumerations.ItemActionType actionType)
-        {
-            return Actions.FirstOrDefault(i => i.Type == actionType);
-        }
-
-        private bool HasAction(Enumerations.ItemActionType actionType)
-        {
-            return GetAction(actionType) != null;
-        }
-
-        private string GetRequiredKey()
-        {
-            return Options.FirstOrDefault(i => i.Type == Enumerations.ItemOptionType.RequiresKey).Data;
-        }
-
-        private string GetRequiredCombination()
-        {
-            return Options.FirstOrDefault(i => i.Type == Enumerations.ItemOptionType.RequiresCombination).Data;
-        }
-
-        private string HasOptionTypeJS(Enumerations.ItemOptionType optionType)
-        {
-            return HasOptionType(optionType) ? "true" : "false";
         }
     }
 }

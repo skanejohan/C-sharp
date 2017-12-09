@@ -12,7 +12,7 @@ The cramped kitchen contains only the most essential - a sink and a small fridge
 
     function makeTea "Make tea" hidden
     ----------------------------------
-    <<if uncleAilbert is here>>You make some tea and offer it to uncle Ailbert who drinks it a bit hesitantly. After a while, he excuses himself and enters the bathroom. You hear him lock the door.[[hide uncleAilbert,lock bathroomDoor,clear UncleAilbertIntroduced,set UncleAilbertGone]]<<else>>You make yourself a cup of tea. It tastes lovely.<<end>>
+    <<if uncleAilbert is here and UncleAilbertIntroduced is set>>You make some tea and offer it to uncle Ailbert who drinks it a bit hesitantly. After a while, he excuses himself and enters the bathroom. You hear him lock the door.[[hide uncleAilbert,hide bathroomDoor,lock bathroomDoor,clear UncleAilbertIntroduced,set UncleAilbertGone]]<<else>>You make yourself a cup of tea. It tastes lovely.<<end>>
 
   item fridge "fridge" fixed
   --------------------------
@@ -34,13 +34,13 @@ The cramped kitchen contains only the most essential - a sink and a small fridge
     ----------------
     The cup is white and has the text "Hotel del Sol, Tenerife" written on it. As far as you can remember, you have never been to Tenerife.
 
-      afterTake = When you take the cup, a key appears.[[show officeDoorKey,hide afterTake]]
+      afterTakeOnce = When you take the cup, a key appears.[[show officeDoorKey]]
 
     + item officeDoorKey "office door key" hidden
     ---------------------------------------------
     This is the key to the office.
 
-  door bathroomDoor "bathroom door" closed
+  door bathroomDoor "bathroom door" openable closed
 
   exit south to bathroom via bathroomDoor
   exit north to fictionSection

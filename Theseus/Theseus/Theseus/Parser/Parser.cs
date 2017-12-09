@@ -274,11 +274,20 @@ namespace Theseus.Parser
             select new Function(name, label, hidden.IsDefined, section);
 
         internal static readonly Parser<Enum.ItemActionType> ItemActionTypeParser =
-            Parse.String("openedOk").Return(Enum.ItemActionType.OpenedOk)
-            .Or(Parse.String("openFailed").Return(Enum.ItemActionType.OpenFailed))
-            .Or(Parse.String("pickedOk").Return(Enum.ItemActionType.PickedOk))
-            .Or(Parse.String("pickFailed").Return(Enum.ItemActionType.PickFailed))
-            .Or(Parse.String("afterTake").Return(Enum.ItemActionType.AfterTake));
+            Parse.String("afterDropOnce").Return(Enum.ItemActionType.AfterDropOnce)
+            .Or(Parse.String("afterDrop").Return(Enum.ItemActionType.AfterDrop))
+            .Or(Parse.String("afterTakeOnce").Return(Enum.ItemActionType.AfterTakeOnce))
+            .Or(Parse.String("afterTake").Return(Enum.ItemActionType.AfterTake))
+            .Or(Parse.String("afterCloseOnce").Return(Enum.ItemActionType.AfterCloseOnce))
+            .Or(Parse.String("afterClose").Return(Enum.ItemActionType.AfterClose))
+            .Or(Parse.String("afterOpenOnce").Return(Enum.ItemActionType.AfterOpenOnce))
+            .Or(Parse.String("afterOpen").Return(Enum.ItemActionType.AfterOpen))
+            .Or(Parse.String("afterLockOnce").Return(Enum.ItemActionType.AfterLockOnce))
+            .Or(Parse.String("afterLock").Return(Enum.ItemActionType.AfterLock))
+            .Or(Parse.String("afterUnlockOnce").Return(Enum.ItemActionType.AfterUnlockOnce))
+            .Or(Parse.String("afterUnlock").Return(Enum.ItemActionType.AfterUnlock))
+            .Or(Parse.String("afterPickOnce").Return(Enum.ItemActionType.AfterPickOnce)
+            .Or(Parse.String("afterPick").Return(Enum.ItemActionType.AfterPick)));
 
         internal static readonly Parser<ItemAction> ItemActionParser =
             from at in ItemActionTypeParser.Token()

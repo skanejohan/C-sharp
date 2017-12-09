@@ -94,7 +94,7 @@ namespace Theseus.Elements
         {
             cb.Add("if (");
             expressions[0].Expression.EmitJavaScriptCode(semantics, cb);
-            cb.Add(") {").In();
+            cb.Append(") {").In();
             expressions[0].Section.EmitJavaScriptCode(semantics, cb);
             cb.Out();
             cb.Add("}");
@@ -103,7 +103,7 @@ namespace Theseus.Elements
             {
                 cb.Add("else if (");
                 expressions[i].Expression.EmitJavaScriptCode(semantics, cb);
-                cb.Add(") {").In();
+                cb.Append(") {").In();
                 expressions[i].Section.EmitJavaScriptCode(semantics, cb);
                 cb.Out();
                 cb.Add("}");

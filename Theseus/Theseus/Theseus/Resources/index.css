@@ -91,14 +91,27 @@ body {
 }
 
 .keypad {
-    width: 400px;
-    position: relative;
-    margin: 10% auto;
-    padding: 5px 20px 13px 20px;
-    border-radius: 10px;
-    _background: #fff;
-    background: #ecd9c6;
-    _background: -moz-linear-gradient(#fff, #999);
-    _background: -webkit-linear-gradient(#fff, #999);
-    _background: -o-linear-gradient(#fff, #999);
+  width: 400px;
+  position: relative;
+  margin: 10% auto;
+  padding: 5px 20px 13px 20px;
+  border-radius: 10px;
+  _background: #fff;
+  background: #ecd9c6;
+  _background: -moz-linear-gradient(#fff, #999);
+  _background: -webkit-linear-gradient(#fff, #999);
+  _background: -o-linear-gradient(#fff, #999);
+}
+
+.conversation {
+  width: 400px;
+  position: relative;
+  margin: 10% auto;
+  padding: 5px 20px 13px 20px;
+  border-radius: 10px;
+  _background: #fff;
+  background: #ecd9c6;
+  _background: -moz-linear-gradient(#fff, #999);
+  _background: -webkit-linear-gradient(#fff, #999);
+  _background: -o-linear-gradient(#fff, #999);
 }

@@ -41,24 +41,12 @@ namespace Theseus
 
         public void Output(string resourcesDir, string targetDir, string gameName, string startLocation)
         {
-            var gameDir = Path.Combine(targetDir, "Game");
-            var frameworkDir = Path.Combine(targetDir, "Framework");
-            var frameworkSourceDir = Path.Combine(resourcesDir, "Framework");
+            GameUtils.GameName = gameName;
 
             new DirectoryInfo(targetDir).CreateOrClear(targetDir);
-            Directory.CreateDirectory(frameworkDir);
-            Directory.CreateDirectory(gameDir);
-
-            File.Copy(Path.Combine(resourcesDir, "index.css"), Path.Combine(targetDir, "index.css"));
-            File.Copy(Path.Combine(frameworkSourceDir, "conv.js"), Path.Combine(frameworkDir, "conv.js"));
-            File.Copy(Path.Combine(frameworkSourceDir, "game.js"), Path.Combine(frameworkDir, "game.js"));
-            File.Copy(Path.Combine(frameworkSourceDir, "keypad.js"), Path.Combine(frameworkDir, "keypad.js"));
-            File.Copy(Path.Combine(frameworkSourceDir, "state.js"), Path.Combine(frameworkDir, "state.js"));
-            File.Copy(Path.Combine(frameworkSourceDir, "view.js"), Path.Combine(frameworkDir, "view.js"));
-            File.Copy(Path.Combine(frameworkSourceDir, "collection.js"), Path.Combine(frameworkDir, "collection.js"));
-            File.Copy(Path.Combine(frameworkSourceDir, "items.js"), Path.Combine(frameworkDir, "items.js"));
-
             // TODO check no errors!
+            File.Copy(Path.Combine(resourcesDir, "index.css"), Path.Combine(targetDir, $"{gameName}.css"));
+            File.Copy(Path.Combine(resourcesDir, "theseus.framework.js"), Path.Combine(targetDir, $"{gameName}.framework.js"));
 
             // Make sure that we write stuff in the correct order
             var orderer = new Orderer();
@@ -70,9 +58,14 @@ namespace Theseus
 
             // Create the JavaScript file
             var cb = new CodeBuilder(0, 4);
+            cb.Add("\"use strict\";");
+            cb.Add();
+
+            cb.Add($"THESEUS.{gameName.ToUpper()} = {{}};");
+            cb.Add();
 
             var flagsCounter = 1;
-            cb.Add("var Flag = {").In();
+            cb.Add($"THESEUS.{gameName.ToUpper()}.Flag = {{").In();
             foreach (var flag in Semantics.Flags)
             {
                 cb.Add($"{flag.Name} : {flagsCounter},");
@@ -85,33 +78,52 @@ namespace Theseus
             foreach (var i in Semantics.Items.ToList().OrderBy(i => i.Order).Reverse())
             {
                 i.EmitJavaScriptCode(Semantics, cb);
+                cb.Add(); 
+            }
+
+            foreach (var c in Semantics.Conversations)
+            {
+                c.EmitJavaScriptCode(Semantics, cb);
+                cb.Add();
             }
 
             foreach (var c in Semantics.Characters)
             {
                 c.EmitJavaScriptCode(Semantics, cb);
+                cb.Add();
             }
 
             foreach (var d in Semantics.Doors)
             {
                 d.EmitJavaScriptCode(Semantics, cb);
+                cb.Add();
             }
 
             foreach (var l in Semantics.Locations)
             {
                 l.EmitJavaScriptCode(Semantics, cb);
+                cb.Add();
             }
 
-            File.WriteAllText($"{gameDir}\\{gameName}.js", cb.ToString());
+            cb.Add($"THESEUS.{gameName.ToUpper()}.startGame = function(){{").In();
+            cb.Add($"THESEUS.context.initialize(THESEUS.{gameName.ToUpper()}.{startLocation}, \"Welcome to the game\");");
+            foreach (var c in Semantics.Characters)
+            {
+                cb.Add($"THESEUS.context.characters().push(THESEUS.{gameName.ToUpper()}.{c.Name});");
+            }
+            cb.Out();
+            cb.Add("}");
+
+            File.WriteAllText(Path.Combine(targetDir, $"{gameName}.js"), cb.ToString());
 
             // Create index.html
             var indexHtml = File.ReadAllText(Path.Combine(resourcesDir, "index.html"))
-                .Replace("{startposition}", "travelSection")
-                .Replace("{gameName}", gameName);
-            File.WriteAllText(Path.Combine(targetDir, "index.html"), indexHtml);
+                .Replace("_gamename_", gameName)
+                .Replace("_GAMENAME_", gameName.ToUpper());
+            File.WriteAllText(Path.Combine(targetDir, $"{gameName}.html"), indexHtml);
 
             //TODO ???
-            File.Copy(Path.Combine(frameworkSourceDir, "test.js"), Path.Combine(frameworkDir, "test.js"));
+            File.Copy(Path.Combine(resourcesDir, "parswick.test.js"), Path.Combine(targetDir, "parswick.test.js"));
         }
 
         private List<Document> Documents;

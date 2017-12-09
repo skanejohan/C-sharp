@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Elements\Action.cs" />
+    <Compile Include="Elements\BaseItem.cs" />
     <Compile Include="Elements\Character.cs" />
     <Compile Include="Elements\CharacterOption.cs" />
     <Compile Include="Elements\Conversation.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Elements\Enumerations\ItemActionType.cs" />
     <Compile Include="Elements\ItemOption.cs" />
     <Compile Include="Elements\JavaScriptUtils\CodeBuilder.cs" />
+    <Compile Include="Elements\JavaScriptUtils\GameUtils.cs" />
     <Compile Include="Elements\JavaScriptUtils\JavaScriptConstructs.cs" />
     <Compile Include="Elements\Section.cs" />
     <Compile Include="Elements\SectionText.cs" />
@@ -118,9 +120,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir $(ProjectDir)$(OutDir)Resources
-mkdir $(ProjectDir)$(OutDir)Resources\Framework
 copy $(SolutionDir)Theseus\Resources\index.* $(ProjectDir)$(OutDir)Resources\
-copy $(SolutionDir)Theseus\Resources\Framework\*.js $(ProjectDir)$(OutDir)Resources\Framework\
+copy $(SolutionDir)Theseus\Resources\theseus.framework.js $(ProjectDir)$(OutDir)Resources\
+copy $(SolutionDir)Theseus\Resources\parswick.test.js $(ProjectDir)$(OutDir)Resources\
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

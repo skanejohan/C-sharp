@@ -40,6 +40,30 @@ namespace Theseus.Elements.JavaScriptUtils
             return this;
         }
 
+        public ICodeBuilder Append(string s)
+        {
+            if (lines.Count > 0)
+            {
+                var line = lines[lines.Count - 1];
+                line += s;
+                lines[lines.Count - 1] = line;
+            }
+            else
+            {
+                Add(s);
+            }
+            return this;
+        }
+
+        public ICodeBuilder Add(bool pred, string s)
+        {
+            if (pred)
+            {
+                return Add(s);
+            }
+            return this;
+        }
+
         public override string ToString()
         {
             return string.Join(Environment.NewLine, lines);

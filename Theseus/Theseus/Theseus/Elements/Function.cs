@@ -47,16 +47,11 @@ namespace Theseus.Elements
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
             var visible = Hidden ? "false" : "true";
-            cb.Add($"function {Name}(context) {{").In();
-            cb.Add("_s = \"\";");
+            cb.Add($"{Name}: function(context) {{").In();
+            cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("context.setMessage(_s);").Out();
-            cb.Add("}");
-            cb.Add($"var {Name}_visible = {visible};");
-            cb.Add($"{Name}.isVisible = () => {Name}_visible;");
-            cb.Add($"{Name}.setVisible = value => {Name}_visible = value;");
-            cb.Add($"additionalVerbs.add(\"{Label}\", {Name});");
-            cb.Add();
+            cb.Add("},");
         }
     }
 }

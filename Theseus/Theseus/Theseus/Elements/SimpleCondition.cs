@@ -1,5 +1,6 @@
 ﻿using System;
 using Theseus.Elements.Enumerations;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Interfaces;
 
 namespace Theseus.Elements
@@ -104,47 +105,48 @@ namespace Theseus.Elements
 
         public void EmitJavaScriptCode(ISemantics semantics, ICodeBuilder cb)
         {
+            var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
             var not = Invert ? "!" : "";
             switch (Mode)
             {
                 case ConditionMode.IsState:
                     if (State == ItemState.Hidden)
                     {
-                        var s = Invert ? $"{Object}.isVisible()" : $"!{Object}.isVisible()";
-                        cb.Add(s);
+                        var s = Invert ? $"{gName}.{Object}.isVisible()" : $"!{gName}.{Object}.isVisible()";
+                        cb.Append(s);
                     }
                     else
                     {
-                        cb.Add($"{not}{Object}.is{State}()");
+                        cb.Append($"{not}{gName}.{Object}.is{State}()");
                     }
                     break;
                 case ConditionMode.IsSet:
-                    cb.Add($"{not}context.flags().has(Flag.{Object})");
+                    cb.Append($"{not}context.flags().has({gName}.Flag.{Object})");
                     break;
                 case ConditionMode.IsIn:
-                    cb.Add($"{not}{Host}.items.has({Object})");
+                    cb.Append($"{not}{gName}.{Host}.containedItems.has({gName}.{Object})");
                     break;
                 case ConditionMode.IsHere:
                     if (semantics.HasCharacterByName(Object))
                     {
-                        cb.Add($"{not}context.location().characters.has({Object})");
+                        cb.Append($"{not}context.location().characters.has({gName}.{Object})");
                     }
                     else
                     {
-                        cb.Add($"{not}context.location.items.has({Object})");
+                        cb.Append($"{not}context.location.items.has({gName}.{Object})");
                     }
                     break;
                 case ConditionMode.IsCarried:
-                    cb.Add($"{not}context.inventory().has({Object})");
+                    cb.Append($"{not}context.inventory().has({gName}.{Object})");
                     break;
                 case ConditionMode.HasBeenState:
-                    cb.Add($"{not}{Object}.hasBeen{State}()");
+                    cb.Append($"{not}{gName}.{Object}.hasBeen{State}()");
                     break;
                 case ConditionMode.HasBeenSet:
-                    cb.Add($"{not}context.historicFlags().has(Flag.{Object})");
+                    cb.Append($"{not}context.historicFlags().has({gName}.Flag.{Object})");
                     break;
                 default:
-                    cb.Add($"{not}context.historicInventory().has({Object})");
+                    cb.Append($"{not}context.historicInventory().has({gName}.{Object})");
                     break;
             }
         }

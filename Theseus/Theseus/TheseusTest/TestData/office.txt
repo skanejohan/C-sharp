@@ -6,10 +6,6 @@ This small office is dominated by a large desk in its centre. Once this well-cra
   --------------------------------------------------------------------------
   The old safe is painted black. Its heavy steel door <<if safe is open>>is open.<<else>>has golden details, and a sign saying "Samuel Withers & Co. Ltd. West Bromwich". It has a dial for entering the correct combination and a large handle for opening the door.<<end>>
 
-    openedOk = You enter the correct combination and with a light creaking, the door opens.
-
-    openFailed = For a moment there, you thought you remembered the code. A futile attempt.
-
     + item houseHistoryBook "old book"
     ----------------------------------
     <<if WallBroken is set>>You examine the map. The entrance to the cellar turned out to be exactly where the book indicated.<<else if historyBookShelf is not hidden>>You examine the map. Behind the bookshelf on the eastern wall of the history section it seems like there has once been an entrance to the cellar.<<else if I carry latinDictionary>>[[show historyBookShelf,set EntranceKnown]]Using the latin dictionary, you are able to decipher the contents of the old book. It describes the history of the house in which the bookshop is located. Most of what is in the book you already know since your parents passed this information to you - whether as a child you wanted it or not - but you find a few nuggets of new information. The most interesting part is the fact that there used to be an entrance to a cellar from what is now the history section. Looking at the map, and reading the text surrounding it, you conclude that there must be a hidden entrance to the basement behind the eastern wall, currently covered by book shelves.<<else>>The leather-bound old book is written in what you assume is latin. Although you may recognize a word here and there, you really have no way of telling what the book is about. You see a small map in one of the pages. You can't be sure but you have a slight feeling of recognition.<<end>> 
@@ -26,7 +22,7 @@ This small office is dominated by a large desk in its centre. Once this well-cra
     --------------------------------------------------------------------------------------------
     Most of the color has been scratched off this once green metal box.<<if metalBox has not been picked>> You remember it vaguely, but exactly what is inside it eludes you. It is quite heavy and when you shake it carefully, it rattles. It has a simple lock, which at the moment seems locked.<<end>>
 
-      pickedOk = Using the paper clip, you manage to open the lock. You open the box and it turns out to contain your old rock collection. Not much of a collection actually, a few small stones and your old rock pick.
+      afterPick = Using the paper clip, you manage to open the lock. You open the box and it turns out to contain your old rock collection. Not much of a collection actually, a few small stones and your old rock pick.
 
       ++ item stones "stones"
       -----------------------
@@ -46,7 +42,7 @@ This small office is dominated by a large desk in its centre. Once this well-cra
 
     + item drawer "drawer" hidden fixed openable closed
     ---------------------------------------------------
-    <<if drawer is closed>>The drawer is closed.<<else if drawer is empty>>The drawer is empty.<<else>>The drawer is, surprisingly enough, almost empty. The only thing you see is an old paper clip.<<end>>
+    <<if drawer is closed>>The drawer is closed.<<else if paperClip is in drawer>>The drawer is, surprisingly enough, almost empty. The only thing you see is an old paper clip.<<else>>The drawer is empty.<<end>>
 
       ++ item paperClip "paper clip"
       ------------------------------
