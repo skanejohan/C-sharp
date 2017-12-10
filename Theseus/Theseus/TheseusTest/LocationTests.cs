@@ -16,11 +16,12 @@ namespace TheseusTest
             var actual = TheseusParser.LocationParser.Parse(
                 @"location office ""My office""
                   This small office is dominated by a large desk in its centre.");
-            var expected = new Location("office", "My office",
+            var expected = new Location("office", "My office", null,
                 new Section(new SectionText("This small office is dominated by a large desk in its centre.")),
                 new List<Flag>(),
                 new List<Item>(),
                 new List<Door>(),
+                new List<MoodSentences>(),
                 new List<Exit>());
             AssertEqual(expected, actual);
         }
@@ -32,11 +33,12 @@ namespace TheseusTest
                 @"location office ""My office""
                   -----------------------------
                   This small office is dominated by a large desk in its centre.");
-            var expected = new Location("office", "My office",
+            var expected = new Location("office", "My office", null,
                 new Section(new SectionText("This small office is dominated by a large desk in its centre.")),
                 new List<Flag>(),
                 new List<Item>(),
                 new List<Door>(),
+                new List<MoodSentences>(),
                 new List<Exit>());
             AssertEqual(expected, actual);
         }
@@ -51,11 +53,12 @@ namespace TheseusTest
 
                   flag BookshelfPulled is set
                   flag B is not set");
-            var expected = new Location("office", "My office",
+            var expected = new Location("office", "My office", null,
                 new Section(new SectionText("This small office is dominated by a large desk in its centre.")),
                 new List<Flag> { new Flag("BookshelfPulled", true), new Flag("B", false) },
                 new List<Item>(),
                 new List<Door>(),
+                new List<MoodSentences>(),
                 new List<Exit>());
             AssertEqual(expected, actual);
         }
@@ -71,7 +74,7 @@ namespace TheseusTest
                   item historyBookShelf ""history bookshelf""
                   -----------------------------------------
                   The dusty bookshelf...");
-            var expected = new Location("office", "My office",
+            var expected = new Location("office", "My office", null,
                 new Section(new SectionText("This small office is dominated by a large desk in its centre.")),
                 new List<Flag> (),
                 new List<Item> {
@@ -79,6 +82,7 @@ namespace TheseusTest
                         new List<ItemOption>(), new Section(new SectionText("The dusty bookshelf...")), 
                         new List<Function>(), new List<ItemAction>())},
                 new List<Door>(),
+                new List<MoodSentences>(),
                 new List<Exit>());
             AssertEqual(expected, actual);
         }
@@ -92,7 +96,7 @@ namespace TheseusTest
                   This small office is dominated by a large desk in its centre.
 
                   door officeDoor ""office door"" lockable locked requires key officeDoorKey");
-            var expected = new Location("office", "My office",
+            var expected = new Location("office", "My office", null,
                 new Section(new SectionText("This small office is dominated by a large desk in its centre.")),
                 new List<Flag>(),
                 new List<Item>(),
@@ -105,6 +109,7 @@ namespace TheseusTest
                             new ItemOption(ItemOptionType.RequiresKey, "officeDoorKey"),
                         }
                     ) },
+                new List<MoodSentences>(),
                 new List<Exit>());
             AssertEqual(expected, actual);
         }
@@ -119,11 +124,12 @@ namespace TheseusTest
 
                   exit south to office via officeDoor
                   exit north to artSection");
-            var expected = new Location("office", "My office",
+            var expected = new Location("office", "My office", null,
                 new Section(new SectionText("This small office is dominated by a large desk in its centre.")),
                 new List<Flag>(),
                 new List<Item>(),
                 new List<Door>(),
+                new List<MoodSentences>(),
                 new List<Exit>
                 {
                     new Exit(Direction.S, "office", "officeDoor"),
@@ -155,7 +161,7 @@ namespace TheseusTest
 
                   exit south to office via officeDoor
                   exit north to artSection");
-            var expected = new Location("office", "My office",
+            var expected = new Location("office", "My office", null,
                 new Section(new SectionText("This small office is dominated by a large desk in its centre.")),
                 new List<Flag>
                 {
@@ -181,6 +187,7 @@ namespace TheseusTest
                         }
                     )
                 },
+                new List<MoodSentences>(),
                 new List<Exit>
                 {
                     new Exit(Direction.S, "office", "officeDoor"),

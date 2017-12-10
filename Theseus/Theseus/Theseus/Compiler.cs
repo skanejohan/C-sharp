@@ -99,6 +99,12 @@ namespace Theseus
                 cb.Add();
             }
 
+            foreach (var d in Semantics.MoodSentencess)
+            {
+                d.EmitJavaScriptCode(Semantics, cb);
+                cb.Add();
+            }
+
             foreach (var l in Semantics.Locations)
             {
                 l.EmitJavaScriptCode(Semantics, cb);

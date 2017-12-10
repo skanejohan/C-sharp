@@ -8,6 +8,13 @@ using Theseus.Interfaces;
 
 namespace Theseus.Elements
 {
+    public class MoodReference
+    {
+        public string Name { get; set; }
+        public bool Randomized { get; set; }
+        public int Probability { get; set; }
+    }
+
     public class Location : IElement, IComparable, ITheseusCodeEmitter, IJavaScriptCodeEmitter, ISemanticsValidator
     {
         public string Name { get; }
@@ -18,8 +25,9 @@ namespace Theseus.Elements
         public IEnumerable<Door> Doors { get; }
         public IEnumerable<Exit> Exits { get; }
 
-        public Location(string name, string label, Section section, IEnumerable<Flag> flags, IEnumerable<Item> items,
-            IEnumerable<Door> doors, IEnumerable<Exit> exits)
+        public Location(string name, string label, MoodReference moodReference, Section section, 
+            IEnumerable<Flag> flags, IEnumerable<Item> items, IEnumerable<Door> doors, 
+            IEnumerable<MoodSentences> moodSentences, IEnumerable<Exit> exits)
         {
             Name = name;
             Label = label;
@@ -28,9 +36,11 @@ namespace Theseus.Elements
             Items = items;
             Doors = doors;
             Exits = exits;
-        }
+            _moodReference = moodReference;
+            _moodSentencess = new List<MoodSentences>(moodSentences);
+    }
 
-        public int CompareTo(object obj)
+    public int CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -62,6 +72,10 @@ namespace Theseus.Elements
             foreach (var door in Doors)
             {
                 semantics.AddDoor(door);
+            }
+            foreach (var s in _moodSentencess)
+            {
+                semantics.AddMoodSentences(s);
             }
             foreach (var exit in Exits)
             {
@@ -134,6 +148,14 @@ namespace Theseus.Elements
             cb.Add($"{gName}.{Name} = new THESEUS.Location({{").In();
             cb.Add($"caption: \"{Label}\",");
             cb.Add(itemsAndDoors.Count() > 0, $"containedItems: [{string.Join(", ", itemsAndDoors.Select(s => gName + "." + s))}],");
+            if (_moodReference != null)
+            {
+                cb.Add("moodSentences: new THESEUS.MoodSentences({").In();
+                cb.Add($"sentences: THESEUS.PARSWICK.{_moodReference.Name},");
+                cb.Add($"random: {JS.Bool(_moodReference.Randomized)},");
+                cb.Add($"probability: {_moodReference.Probability},").Out();
+                cb.Add("}),");
+            }
 
             cb.Add("look: function(context) {").In();
             cb.Add("var _s = \"\";");
@@ -181,5 +203,8 @@ namespace Theseus.Elements
         {
             return Doors.Select(d => d.Name);
         }
+
+        private MoodReference _moodReference;
+        private IEnumerable<MoodSentences> _moodSentencess;
     }
 }

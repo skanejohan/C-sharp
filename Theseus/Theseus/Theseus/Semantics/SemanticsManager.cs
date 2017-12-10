@@ -17,6 +17,7 @@ namespace Theseus.Semantics
         public IEnumerable<Location> Locations => locations;
         public IEnumerable<Character> Characters => characters;
         public IEnumerable<Conversation> Conversations => conversations;
+        public IEnumerable<MoodSentences> MoodSentencess => moodSentencess;
 
         public SemanticsManager()
         {
@@ -28,6 +29,7 @@ namespace Theseus.Semantics
             locations = new SortedSet<Location>();
             characters = new SortedSet<Character>();
             conversations = new SortedSet<Conversation>();
+            moodSentencess = new SortedSet<MoodSentences>();
         }
 
         public event EventHandler<DuplicateEventArgs<Item>> ItemAlreadyExists;
@@ -38,6 +40,7 @@ namespace Theseus.Semantics
         public event EventHandler<DuplicateEventArgs<Location>> LocationAlreadyExists;
         public event EventHandler<DuplicateEventArgs<Character>> CharacterAlreadyExists;
         public event EventHandler<DuplicateEventArgs<Conversation>> ConversationAlreadyExists;
+        public event EventHandler<DuplicateEventArgs<MoodSentences>> MoodSentencesAlreadyExists;
 
         public void AddItem(Item item)
         {
@@ -135,6 +138,18 @@ namespace Theseus.Semantics
             }
         }
 
+        public void AddMoodSentences(MoodSentences moodSentences)
+        {
+            if (HasMoodSentencesByName(moodSentences.Name))
+            {
+                MoodSentencesAlreadyExists?.Invoke(this, new DuplicateEventArgs<MoodSentences>() { Object = moodSentences });
+            }
+            else
+            {
+                moodSentencess.Add(moodSentences);
+            }
+        }
+
         public Item ItemByName(string name)
         {
             return Items.FirstOrDefault(i => i.Name == name);
@@ -168,6 +183,11 @@ namespace Theseus.Semantics
         public Conversation ConversationByName(string name)
         {
             return Conversations.FirstOrDefault(c => c.Name == name);
+        }
+
+        public MoodSentences MoodSentencesByName(string name)
+        {
+            return MoodSentencess.FirstOrDefault(s => s.Name == name);
         }
 
         public void Analyze(IEnumerable<ISemanticsValidator> validators)
@@ -216,6 +236,11 @@ namespace Theseus.Semantics
             return Conversations.Any(c => c.Name == name);
         }
 
+        public bool HasMoodSentencesByName(string name)
+        {
+            return MoodSentencess.Any(s => s.Name == name);
+        }
+
         private SortedSet<Item> items;
         private SortedSet<Flag> flags;
         private SortedSet<Door> doors;
@@ -224,6 +249,7 @@ namespace Theseus.Semantics
         private SortedSet<Location> locations;
         private SortedSet<Character> characters;
         private SortedSet<Conversation> conversations;
+        private SortedSet<MoodSentences> moodSentencess;
 
     }
 }

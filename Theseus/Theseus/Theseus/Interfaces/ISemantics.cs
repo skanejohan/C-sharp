@@ -15,6 +15,7 @@ namespace Theseus.Interfaces
         IEnumerable<Location> Locations { get; }
         IEnumerable<Character> Characters { get; }
         IEnumerable<Conversation> Conversations { get; }
+        IEnumerable<MoodSentences> MoodSentencess { get; }
 
         event EventHandler<DuplicateEventArgs<Item>> ItemAlreadyExists;
         event EventHandler<DuplicateEventArgs<Flag>> FlagAlreadyExists;
@@ -24,6 +25,7 @@ namespace Theseus.Interfaces
         event EventHandler<DuplicateEventArgs<Location>> LocationAlreadyExists;
         event EventHandler<DuplicateEventArgs<Character>> CharacterAlreadyExists;
         event EventHandler<DuplicateEventArgs<Conversation>> ConversationAlreadyExists;
+        event EventHandler<DuplicateEventArgs<MoodSentences>> MoodSentencesAlreadyExists;
 
         void AddItem(Item item);
         void AddFlag(Flag flag);
@@ -33,6 +35,7 @@ namespace Theseus.Interfaces
         void AddLocation(Location location);
         void AddCharacter(Character character);
         void AddConversation(Conversation conversation);
+        void AddMoodSentences(MoodSentences moodSentences);
 
         Item ItemByName(string name);
         Flag FlagByName(string name);
@@ -41,6 +44,7 @@ namespace Theseus.Interfaces
         Location LocationByName(string name);
         Character CharacterByName(string name);
         Conversation ConversationByName(string name);
+        MoodSentences MoodSentencesByName(string name);
 
         bool HasItemByName(string name);
         bool HasFlagByName(string name);
@@ -49,5 +53,6 @@ namespace Theseus.Interfaces
         bool HasLocationByName(string name);
         bool HasCharacterByName(string name);
         bool HasConversationByName(string name);
+        bool HasMoodSentencesByName(string name);
     }
 }

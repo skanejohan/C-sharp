@@ -452,17 +452,50 @@ namespace Theseus.Parser
             from conversations in ConversationParser.Many()
             select new Character(name, label, options, section, conversations);
 
+        internal static readonly Parser<string> MoodSentenceParser =
+            from _1 in Parse.Char('"')
+            from c in (Parse.AnyChar.Except(LineBreakParser)).Many()
+            from _2 in LineBreakParser
+            select string.Concat(c).Remove(c.Count()-1);
+
+        internal static readonly Parser<MoodSentences> MoodSentencesParser =
+            from _1 in Parse.String("mood").Token()
+            from _2 in Parse.String("sentences").Token()
+            from name in IdentParser
+            from _3 in DashesParser
+            from sentences in MoodSentenceParser.Token().Many()
+            select new MoodSentences(name, sentences);
+
+        internal static readonly Parser<MoodReference> MoodReferenceParser =
+            from _1 in Parse.String("mood").Token()
+            from name in IdentParser
+            from mode in Parse.Optional(Parse.String("rotate").Token().Or(Parse.String("random").Token()))
+            from prob in Parse.Optional(
+                from _2 in Parse.String("probability").Token()
+                from p in Parse.Number.Token()
+                select p)
+            select new MoodReference
+            {
+                Name = name,
+                Randomized = mode.IsDefined && string.Concat(mode.Get()) == "random",
+                Probability = prob.IsDefined ? int.Parse(prob.Get().ToString()) : 100,
+            };
+
+
         internal static readonly Parser<IElement> LocationParser =
             from _1 in Parse.String("location").Token()
             from name in IdentParser
             from label in QuotedStringParser
+            from moodReference in Parse.Optional(MoodReferenceParser)
             from _2 in DashesParser
             from section in SectionParser
             from flags in FlagParser.Many().Token()
             from items in ItemParser.Many().Token()
             from doors in DoorParser.Many().Token()
+            from moodSentences in MoodSentencesParser.Many().Token()
             from exits in ExitParser.Many().Token()
-            select new Location(name, label, section, flags, items, doors, exits);
+            select new Location(name, label, moodReference.IsDefined? moodReference.Get() : null, 
+                section, flags, items, doors, moodSentences, exits);
 
         internal static readonly Parser<IElement> DocumentParser =
             LocationParser.Or(CharacterParser).End();

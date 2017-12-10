@@ -1,6 +1,6 @@
 document ::= location | character
 
-location ::= "location" identifier """ string """ {"-"} section {flag} {item} {door} {exit}
+location ::= "location" identifier """ string """ ["mood" identifier ["rotate" | "random"] ["probability" number]] {"-"} section {flag} {item} {door} {moodSentence} {exit}
 
 character ::= "character" identifier """ string """ {[","] characterOption} {"-"} section {conversation}
 

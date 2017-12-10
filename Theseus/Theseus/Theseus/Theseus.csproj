@@ -76,6 +76,7 @@
     <Compile Include="Elements\JavaScriptUtils\CodeBuilder.cs" />
     <Compile Include="Elements\JavaScriptUtils\GameUtils.cs" />
     <Compile Include="Elements\JavaScriptUtils\JavaScriptConstructs.cs" />
+    <Compile Include="Elements\MoodSentences.cs" />
     <Compile Include="Elements\Section.cs" />
     <Compile Include="Elements\SectionText.cs" />
     <Compile Include="Elements\SimpleCondition.cs" />

@@ -413,6 +413,32 @@ THESEUS.Item = function(info) {
     return result;
 };
 
+// Constructs a "mood sentences" object.
+THESEUS.MoodSentences = function(info) {
+    var sentences = info.sentences;
+    var random = info.random === undefined ? false : info.random;
+    var probability = info.probability === undefined ? 100 : info.probability;
+    var availableSentences = [];
+
+    return {
+        get: function () {
+            if (availableSentences.length == 0) {
+                availableSentences = sentences.slice();
+            }
+            if (probability == 100 || Math.random() * 100 < probability) {
+                var index = 0;
+                if (random) {
+                    index = Math.floor(Math.random() * availableSentences.length);
+                }
+                var sentence = availableSentences[index].slice(0);
+                availableSentences.splice(index, 1);
+                return "<br><br>" + sentence;
+            }
+            return "";
+        }
+    }
+};
+
 // Constructs a location.
 THESEUS.Location = function(info) {
     var containedItems = new THESEUS.Items();
@@ -447,10 +473,17 @@ THESEUS.Location = function(info) {
     }
 
     function look(context) {
-	    if (info.look === undefined) {
-	    	return "You see nothing special here";
-	    }
-	    return info.look(context);
+        var s;
+        if (info.look === undefined) {
+	    	s = "You see nothing special here";
+        }
+        else{
+            s = info.look(context);
+            if (info.moodSentences != undefined) {
+                s += info.moodSentences.get();
+            }
+        }
+	    return s;
 	}
 
     return result;
