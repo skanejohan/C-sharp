@@ -151,7 +151,7 @@ namespace Theseus.Elements
             if (_moodReference != null)
             {
                 cb.Add("moodSentences: new THESEUS.MoodSentences({").In();
-                cb.Add($"sentences: THESEUS.PARSWICK.{_moodReference.Name},");
+                cb.Add($"sentences: {gName}.{_moodReference.Name},");
                 cb.Add($"random: {JS.Bool(_moodReference.Randomized)},");
                 cb.Add($"probability: {_moodReference.Probability},").Out();
                 cb.Add("}),");
