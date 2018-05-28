@@ -153,6 +153,7 @@ THESEUS.Items = function () {
         length: () => items.length,
         forEach: forEach,
         forEachOpen: forEachOpen,
+        toArray: () => items,
     }
 };
 
