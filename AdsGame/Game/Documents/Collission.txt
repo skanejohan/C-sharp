@@ -1,0 +1,25 @@
+Objects
+ 1. IFixedRectangle (left, top, width, height)
+ 2. IDynamicRectangle (left, top, width, height, weight, speedX, speedY)
+ 3. IFixedCircle (centerX, centerY, radius)
+ 4. IDynamicCircle (centerX, centerY, radius, weight, speedX, speedY)
+
+Possible collisions:
+ R-R (1-2) - just rectangle intersection
+ R-C (1-4, 2-3, 2-4) - rectangle intersection, followed by additional calculation (A)
+ C-C (3-4) - rectangle intersection, followed by simple radius check
+
+Adjustments to position (to exactly "before" the collision will appear)
+ Collision between dynamic and fixed object: move the dynamic object "back" until there is no longer a collision
+ Collision between two dynamic objects: move both objects "back" (relative speed) until there is no longer a collision
+
+Adjustments to direction
+
+Adjustments to speed
+ Let the total speed after equal the total speed before. When colliding with a fixed object, the dynamic object's total speed should remain the same. For a collision between two dynamic objects, split up the total speed between them so that 
+
+(A) - does a rectangle and a circle really intersect?
+
+
+
+Elastic collision

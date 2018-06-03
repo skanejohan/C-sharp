@@ -61,8 +61,8 @@
         {
             if (Alive)
             {
-                spriteBatch.Draw(Texture, new Vector2(X, Y), null, Color, 0f, 
-                    Vector2.Zero, Scale, spriteEffects, 0f);
+                spriteBatch.Draw(Texture, new Vector2((int)(X - Scale * Width / 2), (int)(Y - Scale * Height / 2)), 
+                    null, Color, 0f, Vector2.Zero, Scale, spriteEffects, 0f);
             }
         }
 

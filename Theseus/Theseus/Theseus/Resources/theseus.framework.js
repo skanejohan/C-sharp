@@ -138,7 +138,7 @@ THESEUS.Items = function () {
         for (let i = 0; i < items.length; i++) {
             if (items[i].isVisible()) {
                 fn(items[i], container);
-                if (items[i].isOpen()) {
+                if (items[i].isOpen() || !(items[i].isPickable() || items[i].isOpenable() || items[i].isLockable())) {
                     items[i].containedItems.forEachOpen(fn, items[i]);
                 }
             }

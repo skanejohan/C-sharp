@@ -34,9 +34,11 @@
             return tileTypes.Count - 1;
         }
 
-        public void SetTile(int x, int y, int tileIndex)
+        public ITile SetTile(int x, int y, int tileIndex)
         {
-            tiles.Add(new Tile(Engine, this, x, y, tileTypes[tileIndex]));
+            var tile = new Tile(Engine, this, x, y, tileTypes[tileIndex]);
+            tiles.Add(tile);
+            return tile;
         }
 
         public void Move(Direction direction, IPositionable sprite, int steps)
@@ -197,7 +199,7 @@
             }
         }
 
-        internal class TileType
+        public class TileType
         {
             public Texture2D Texture { get; }
             public BlockingType BlockingType { get; }
@@ -211,7 +213,7 @@
             }
         }
 
-        internal class Tile : ICollidable
+        public class Tile : ITile, ICollidable
         {
             public TileType TileType { get; }
             public int X { get; }

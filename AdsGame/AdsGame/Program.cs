@@ -9,7 +9,9 @@
         {
             //new SimpleGame().Run();
             //new GameWithStates().Run();
-            new TiledGame().Run();
+            //new TiledGame().Run();
+            new Breakout.Game().Run();
+            //new TiledGame().Run();
         }
     }
 }

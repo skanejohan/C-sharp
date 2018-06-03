@@ -1,5 +1,6 @@
 ﻿namespace Ads.Game
 {
+    using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
 
     public enum Direction
@@ -20,6 +21,12 @@
         All = 15
     }
 
+    public interface ITile
+    {
+        int ScreenX { get; }
+        int ScreenY { get; }
+        Rectangle Rectangle();
+    }
 
     public interface IScene : IEntity, IResourceEntity
     {
@@ -30,7 +37,7 @@
 
         int AddTileType(string asset, BlockingType blockingType = BlockingType.None,
             SpriteEffects spriteEffects = SpriteEffects.None);
-        void SetTile(int x, int y, int tileIndex);
+        ITile SetTile(int x, int y, int tileIndex);
 
         void Scroll(Direction direction, int steps = 1);
 

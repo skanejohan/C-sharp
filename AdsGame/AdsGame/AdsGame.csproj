@@ -38,6 +38,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Breakout.cs" />
+    <Compile Include="CollisionTests.cs" />
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Explosion.cs" />
     <Compile Include="Entities\Laser.cs" />
