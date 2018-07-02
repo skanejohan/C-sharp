@@ -123,6 +123,7 @@
     <PostBuildEvent>mkdir $(ProjectDir)$(OutDir)Resources
 copy $(SolutionDir)Theseus\Resources\index.* $(ProjectDir)$(OutDir)Resources\
 copy $(SolutionDir)Theseus\Resources\theseus.framework.js $(ProjectDir)$(OutDir)Resources\
+copy $(SolutionDir)Theseus\Resources\theseus.framework.ui.js $(ProjectDir)$(OutDir)Resources\
 copy $(SolutionDir)Theseus\Resources\parswick.test.js $(ProjectDir)$(OutDir)Resources\
 </PostBuildEvent>
   </PropertyGroup>

@@ -47,6 +47,7 @@ namespace Theseus
             // TODO check no errors!
             File.Copy(Path.Combine(resourcesDir, "index.css"), Path.Combine(targetDir, $"{gameName}.css"));
             File.Copy(Path.Combine(resourcesDir, "theseus.framework.js"), Path.Combine(targetDir, $"{gameName}.framework.js"));
+            File.Copy(Path.Combine(resourcesDir, "theseus.framework.ui.js"), Path.Combine(targetDir, $"{gameName}.framework.ui.js"));
 
             // Make sure that we write stuff in the correct order
             var orderer = new Orderer();
