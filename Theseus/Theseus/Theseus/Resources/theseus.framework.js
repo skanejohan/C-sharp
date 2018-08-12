@@ -272,6 +272,7 @@ THESEUS.Item = function(info) {
         context.location().items.add(result);
         context.setMessage("You drop the " + info.caption + ".");
         processAfter(context, "Drop");
+        context.update();
     }
 
     function take(context) {
@@ -282,6 +283,7 @@ THESEUS.Item = function(info) {
         context.location().items.remove(result);
         context.setMessage("You take the " + info.caption + ".");
         processAfter(context, "Take");
+        context.update();
     }
 
     function close(context) {
@@ -291,6 +293,7 @@ THESEUS.Item = function(info) {
         hasBeenClosed = true;
         context.setMessage("You close the " + info.caption + ".");
         processAfter(context, "Close");
+        context.update();
     }
 
     function open(context) {
@@ -300,6 +303,7 @@ THESEUS.Item = function(info) {
         hasBeenOpen = true;
         context.setMessage("You open the " + info.caption + ".");
         processAfter(context, "Open");
+        context.update();
     }
 
     function lock(context) {
@@ -308,6 +312,7 @@ THESEUS.Item = function(info) {
         hasBeenLocked = true;
         context.setMessage("You lock the " + info.caption + ".");
         processAfter(context, "Lock");
+        context.update();
     }
 
     function enterCombination(context, combination) {
@@ -316,12 +321,13 @@ THESEUS.Item = function(info) {
             hasBeenUnlocked = true;
             context.setMessage("You enter the correct combination and unlock the " + info.caption + ".");
             processAfter(context, "EnterCombination");
+            context.update();
         } 
-
 
         var incorrectFunction = function() {
             context.setMessage("For a moment there, you thought you remembered the code. A futile attempt.");
             processAfter(context, "EnterCombination");
+            context.update();
         }
 
         context.state().add("A-" + info.name + "-enterCombination-" + combination);
@@ -352,6 +358,7 @@ THESEUS.Item = function(info) {
         isLocked = false;
         hasBeenUnlocked = true;
         processAfter(context, "Unlock");
+        context.update();
     }
 
     function pick(context) {
@@ -362,6 +369,7 @@ THESEUS.Item = function(info) {
         hasBeenPicked = true;
         context.setMessage("Using the " + info.requiredKey.caption + ", you manage to pick the " + info.caption + ".");
         processAfter(context, "Pick");
+        context.update();
     }
 
     function processAfter(context, verb){
@@ -600,7 +608,9 @@ THESEUS.Context = function () {
     }
 
     function reset() {
+        var chars = characters.slice(0);
         initialize(initialLocation, initialMessage);
+        characters = chars;
     }
 
     function restore(stateString) {
@@ -629,9 +639,10 @@ THESEUS.Context = function () {
             }
             state.add('M-' + location.name);
             message = "You move to the " + location.caption;
+            obj.update();
         },
-        updateLocation: () => historicLocations.push(location),
-        updateCharacters: () => {
+        update: () => {
+            historicLocations.push(location);
             for (let c in characters)
             {
                 characters[c].update(obj);

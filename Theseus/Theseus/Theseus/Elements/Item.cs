@@ -114,7 +114,8 @@ namespace Theseus.Elements
             cb.Add($"context.state().add('A-{gName}.{Name}-examine');");
             cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
-            cb.Add("context.setMessage(_s);").Out();
+            cb.Add("context.setMessage(_s);");
+            cb.Add("context.update();").Out();
             cb.Add("},");
 
             ProcessAfterAction(ItemActionType.AfterDrop, semantics, cb);
