@@ -267,6 +267,7 @@ THESEUS.Item = function(info) {
     }
 
     function drop(context) {
+        context.state().add("A-" + info.name + "-drop");
         context.inventory().remove(result);
         context.location().items.add(result);
         context.setMessage("You drop the " + info.caption + ".");
@@ -274,6 +275,7 @@ THESEUS.Item = function(info) {
     }
 
     function take(context) {
+        context.state().add("A-" + info.name + "-take");
         context.inventory().remove(result);
         context.inventory().add(result);
         context.historicInventory().add(result);
@@ -283,6 +285,7 @@ THESEUS.Item = function(info) {
     }
 
     function close(context) {
+        context.state().add("A-" + info.name + "-close");
         isOpen = false;
         isClosed = true;
         hasBeenClosed = true;
@@ -291,6 +294,7 @@ THESEUS.Item = function(info) {
     }
 
     function open(context) {
+        context.state().add("A-" + info.name + "-open");
         isOpen = true;
         isClosed = false;
         hasBeenOpen = true;
@@ -299,6 +303,7 @@ THESEUS.Item = function(info) {
     }
 
     function lock(context) {
+        context.state().add("A-" + info.name + "-lock");
         isLocked = true;
         hasBeenLocked = true;
         context.setMessage("You lock the " + info.caption + ".");
@@ -319,6 +324,7 @@ THESEUS.Item = function(info) {
             processAfter(context, "EnterCombination");
         }
 
+        context.state().add("A-" + info.name + "-enterCombination-" + combination);
         if (THESEUS.view == undefined) {
             if (info.requiredCombination == combination) {
                 correctFunction();
@@ -341,6 +347,7 @@ THESEUS.Item = function(info) {
     }
 
     function unlock(context) {
+        context.state().add("A-" + info.name + "-unlock");
         context.setMessage("You unlock the " + info.caption + ".");
         isLocked = false;
         hasBeenUnlocked = true;
@@ -348,6 +355,7 @@ THESEUS.Item = function(info) {
     }
 
     function pick(context) {
+        context.state().add("A-" + info.name + "-pick");
         isLocked = false;
         hasBeenUnlocked = true;
         isPicked = true;
@@ -417,6 +425,7 @@ THESEUS.Location = function(info) {
     }
 
     var result = {
+        name: info.name,
     	caption: info.caption,
         items: containedItems,
         characters: characters,
@@ -565,6 +574,8 @@ THESEUS.Conversation = function() {
 // Constructs an object that holds the game context, 
 // i.e. the current state of the game. 
 THESEUS.Context = function () {
+    var initialLocation;
+    var initialMessage;
     var location;
     var historicLocations;
     var inventory;
@@ -573,23 +584,51 @@ THESEUS.Context = function () {
     var flags;
     var historicFlags;
     var characters;
+    var state;
 
     function initialize(loc, msg) {
-        location = loc,
+        initialLocation = loc;
+        initialMessage = msg;
+        location = loc;
         inventory = new THESEUS.Items();
-        historicInventory = THESEUS.Items(); // Everything that has ever been carried
+        historicInventory = new THESEUS.Items(); // Everything that has ever been carried
         flags = new Set();
         message = msg;
         historicLocations = [];
         characters = [];
+        state = new THESEUS.State();
+    }
+
+    function reset() {
+        initialize(initialLocation, initialMessage);
+    }
+
+    function restore(stateString) {
+        reset();
+        state.fromString(stateString);
+        state.apply();
+    }
+
+    function getObjectByName(name) {
+        var obj = window;
+        name.split(".").forEach((v,i) => obj = obj[v]);
+        return obj;
     }
 
     var obj = {
         initialize: initialize,
+        reset: reset,
+        restore: restore,
         location: () => location,
         setLocation: loc => {
-            location = loc;
-            message = "You move to the " + loc.caption;
+            if (typeof loc == "string") {
+                location = getObjectByName(loc);
+            } 
+            else {
+                location = loc;
+            }
+            state.add('M-' + location.name);
+            message = "You move to the " + location.caption;
         },
         updateLocation: () => historicLocations.push(location),
         updateCharacters: () => {
@@ -606,6 +645,8 @@ THESEUS.Context = function () {
         setMessage: m => message = m,
         flags: () => flags,
         historicFlags: () => historicFlags,
+        state: () => state,
+        getObjectByName: getObjectByName,
     }
 
     return obj;
@@ -614,10 +655,9 @@ THESEUS.Context = function () {
 // Constructs a state object.
 THESEUS.State = function() {
     // Possible actions:
-    //   N, E, S, W - move in the correct direction
-    //   "office door"-"Unlock" - apply verb to noun
-    //   K1, K5 - click the appropriate keylock digit
-    //   R2,3 - respond 2, leading to statement 3
+    //   "M-THESEUS.PARSWICK.historySection" - move to the specified location
+    //   "A-THESEUS.PARSWICK.cupboard-open" - apply verb to noun
+    //   TODO: R2,3 - respond 2, leading to statement 3
     var actions = [];
     var applying = false;
 
@@ -643,65 +683,44 @@ THESEUS.State = function() {
 
     function apply() {
         applying = true;
-        for (var i = 0; i < actions.length; i++) {
-            var action = actions[i];
         
-            // Is it a noun - verb construct?
-            var nv = action.match(new RegExp(/^"([^"]*)"-"([^"]*)"$/));
-            if (nv != null) {
-                console.log("applying " + nv[2] + " to " + nv[1]);
-                applyVerb(nv[1], nv[2]);
+        actions.forEach((s,i) => {
+            var type = s.substring(0, 2);
+            var info = s.substring(2);
+            switch(type) {
+                case "M-":
+                    THESEUS.context.setLocation(info);
+                    break;
+                case "A-":
+                    var noun = info.split("-")[0]; 
+                    var verb = info.split("-")[1]; 
+                    var data = info.split("-")[2];
+                    var item = THESEUS.context.getObjectByName(noun);
+                    item.getVerbs(THESEUS.context).forEach((v, f) => {
+                        if (f.name == verb) {
+                            f(THESEUS.context, data);
+                        }
+                    });
+                    break;
             }
-            
-            // Is it a direction?
-            if (action == "N" || action == "E" || action == "S" || action == "W") {
-                console.log("moving " + action);
-                THESEUS.context.setLocation(THESEUS.context.location().getExits()[action]);
-            }
-
-            // Is it a keylock click?
-            var kc = action.match(new RegExp(/^K\d$/));
-            if (kc != null) {
-                console.log("clicking digit " + kc[0][1]);
-                THESEUS.keypad.enterDigit(kc[0][1]);
-            }
-
-            // Is it a response?
-            var r = action.match(new RegExp(/^R(\d*),(\d*)$/));
-            if (r != null) {
-                console.log("responding " + r[1] + ", leading to statement " + r[2]);
-                THESEUS.conversation.respond(r[1], r[2])
-            }
+            // // TODO Is it a response?
+            // var r = action.match(new RegExp(/^R(\d*),(\d*)$/));
+            // if (r != null) {
+            //     console.log("responding " + r[1] + ", leading to statement " + r[2]);
+            //     THESEUS.conversation.respond(r[1], r[2])
+            // }
 
             if (THESEUS.view != undefined) { THESEUS.view.update(THESEUS.context); }
-        }
+        });
         applying = false;
     }
 
     function toString() {
-        // TODO
+        return actions.join(",");
     }
 
-    function fromString() {
-        // TODO
-    }
-
-    function applyVerb(itemName, verb) {
-        var target = THESEUS.context.location().items.byName(itemName);
-        if (target == null) {
-            target = THESEUS.context.inventory().byName(itemName);
-        }
-        if (target == null) {
-            target = THESEUS.context.location().characters.by("caption", itemName);
-        }
-        if (target == null) {
-            return;
-        }
-        target.getVerbs(THESEUS.context).forEach((v, f) => {
-            if (v == verb) {
-                f(THESEUS.context);
-            }
-        });
+    function fromString(s) {
+        actions = s.split(",");
     }
 }
 

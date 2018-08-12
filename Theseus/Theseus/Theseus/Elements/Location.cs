@@ -144,8 +144,11 @@ namespace Theseus.Elements
         {
             var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
 
+            GameUtils.CurrentObject = $"{gName}.{Name}";
+
             var itemsAndDoors = GetItems(true).Concat(GetDoors());
             cb.Add($"{gName}.{Name} = new THESEUS.Location({{").In();
+            cb.Add($"name: \"{gName}.{Name}\",");
             cb.Add($"caption: \"{Label}\",");
             cb.Add(itemsAndDoors.Count() > 0, $"containedItems: [{string.Join(", ", itemsAndDoors.Select(s => gName + "." + s))}],");
             if (_moodReference != null)

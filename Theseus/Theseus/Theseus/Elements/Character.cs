@@ -52,12 +52,16 @@ namespace Theseus.Elements
             var location = getLocation();
             var conversation = getConversation();
 
+            GameUtils.CurrentObject = $"{gName}.{Name}";
+
             cb.Add($"{gName}.{Name} = new THESEUS.Character({{").In();
+            cb.Add($"name: \"{gName}.{Name}\",");
             cb.Add($"caption: \"{Label}\",");
             cb.Add(true, $"isVisible: false,"); // TODO add visibility
             cb.Add(location != "null", $"location: {location};");
             cb.Add(conversation != "", $"conversation: {gName}.{conversation},");
             cb.Add("examine: function() {").In();
+            cb.Add($"context.state().add('A-{gName}.{Name}-examine');");
             cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("context.setMessage(_s);").Out();

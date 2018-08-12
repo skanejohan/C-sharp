@@ -1,5 +1,6 @@
 ﻿using System;
 using Theseus.Elements.Extensions;
+using Theseus.Elements.JavaScriptUtils;
 using Theseus.Extensions;
 using Theseus.Interfaces;
 
@@ -48,6 +49,7 @@ namespace Theseus.Elements
         {
             var visible = Hidden ? "false" : "true";
             cb.Add($"{Name}: function(context) {{").In();
+            cb.Add($"context.state().add('A-{GameUtils.CurrentObject}-{Name}');");
             cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("context.setMessage(_s);").Out();

@@ -93,7 +93,10 @@ namespace Theseus.Elements
             var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
             var hasItems = containedItems.Count > 0;
 
+            GameUtils.CurrentObject = $"{gName}.{Name}";
+
             cb.Add($"{gName}.{Name} = new THESEUS.Item({{").In();
+            cb.Add($"name: \"{gName}.{Name}\",");
             cb.Add($"caption: \"{Label}\",");
             cb.Add(Hidden, $"isVisible: false,");
             cb.Add(IsOpenable(), $"isOpenable: true,");
@@ -108,6 +111,7 @@ namespace Theseus.Elements
             cb.Add(hasItems, $"containedItems: [{string.Join(", ", containedItems.Select(i => $"{gName}.{i.Name}"))}],");
 
             cb.Add("examine: function(context) {").In();
+            cb.Add($"context.state().add('A-{gName}.{Name}-examine');");
             cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("context.setMessage(_s);").Out();

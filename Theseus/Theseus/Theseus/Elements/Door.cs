@@ -41,6 +41,7 @@ namespace Theseus.Elements
             var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
 
             cb.Add($"{gName}.{Name} = new THESEUS.Item({{").In();
+            cb.Add($"name: \"{gName}.{Name}\",");
             cb.Add($"caption: \"{Label}\",");
             cb.Add(IsOpenable() || IsLockable(), $"isOpenable: true,");
             cb.Add(IsClosed(), $"isClosed: true,");
