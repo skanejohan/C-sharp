@@ -526,6 +526,7 @@ THESEUS.Conversation = function() {
 		startConversation : startConversation,
         currentStatement : () => currentStatement,
         currentResponses : () => currentResponses,
+        setStatementId : setStatementId, // used when restoring state
 	}	
 
 	function addStatement(id, func) {
@@ -554,8 +555,14 @@ THESEUS.Conversation = function() {
             r_id => {
                 var func = _statements[r_id];
                 var id = _responses[r_id][0];
-                // todo fix this! We must not evaluate the function (and have the side effects) unless the item is actually selected
-                currentResponses.push({text : func(), responseId : r_id, fn : () => setStatementId(id)});
+                currentResponses.push( {
+                    text : func(), 
+                    responseId : r_id, 
+                    fn : () => {
+                        THESEUS.context.state().add('R-' + id);
+                        setStatementId(id);
+                    }
+                });
             });
     }
 };
@@ -652,7 +659,7 @@ THESEUS.State = function() {
     // Possible actions:
     //   "M-THESEUS.PARSWICK.historySection" - move to the specified location
     //   "A-THESEUS.PARSWICK.cupboard-open" - apply verb to noun
-    //   TODO: R2,3 - respond 2, leading to statement 3
+    //   "R-2" - respond 2 (in a conversation)
     var actions = [];
     var applying = false;
 
@@ -697,14 +704,13 @@ THESEUS.State = function() {
                         }
                     });
                     break;
+                case "R-":
+                    THESEUS.context.conversation.setStatementId(info);
+                    if (info == "0") {
+                        THESEUS.context.conversation = undefined;
+                    }
+                    break;
             }
-            // // TODO Is it a response?
-            // var r = action.match(new RegExp(/^R(\d*),(\d*)$/));
-            // if (r != null) {
-            //     console.log("responding " + r[1] + ", leading to statement " + r[2]);
-            //     THESEUS.conversation.respond(r[1], r[2])
-            // }
-
             if (THESEUS.view != undefined) { THESEUS.view.update(THESEUS.context); }
         });
         applying = false;
