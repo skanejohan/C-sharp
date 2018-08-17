@@ -48,20 +48,20 @@ namespace Theseus.Elements
             {
                 case ConversationItemType.StatementDefinition:
                 case ConversationItemType.ResponseDefinition:
-                    cb.Add($"THESEUS.conversation.addStatement({Number}, () => {{").In();
+                    cb.Add($"conversation.addStatement({Number}, () => {{").In();
                     cb.Add("var _s = \"\"");
                     Section.EmitJavaScriptCode(semantics, cb);
                     cb.Add("return _s;").Out();
                     cb.Add("});");
                     break;
                 case ConversationItemType.StatementHasResponses:
-                    cb.Add($"THESEUS.conversation.setResponses({Number}, [{string.Join(", ", Responses)}]);");
+                    cb.Add($"conversation.setResponses({Number}, [{string.Join(", ", Responses)}]);");
                     break;
                 case ConversationItemType.ResponseCausesStatement:
-                    cb.Add($"THESEUS.conversation.setResponses({Number}, [{CausesNumber}]);");
+                    cb.Add($"conversation.setResponses({Number}, [{CausesNumber}]);");
                     break;
                 default:
-                    cb.Add($"THESEUS.conversation.setResponses({Number}, [0]);");
+                    cb.Add($"conversation.setResponses({Number}, [0]);");
                     break;
             }
         }

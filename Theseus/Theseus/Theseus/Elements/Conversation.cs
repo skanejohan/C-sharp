@@ -40,9 +40,10 @@ namespace Theseus.Elements
             var gName = $"THESEUS.{GameUtils.GameName.ToUpper()}";
 
             cb.Add($"{gName}.{Name} = function() {{").In();
-            cb.Add("THESEUS.conversation.clear();");
+            cb.Add("var conversation = new THESEUS.Conversation();");
             ConversationItems.EmitJavaScript(semantics, cb);
-            cb.Add("THESEUS.conversation.startConversation(1);").Out();
+            cb.Add("conversation.startConversation(1);");
+            cb.Add("return conversation;").Out();
             cb.Add("}");
         }
     }

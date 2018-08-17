@@ -100,20 +100,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="Docs\classes.plantuml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Docs\bnf.txt" />
-    <Content Include="Resources\Framework\collection.js" />
-    <Content Include="Resources\Framework\conv.js" />
-    <Content Include="Resources\Framework\game.js" />
-    <Content Include="Resources\Framework\items.js" />
-    <Content Include="Resources\Framework\keypad.js" />
-    <Content Include="Resources\Framework\state.js" />
-    <Content Include="Resources\Framework\test.js" />
-    <Content Include="Resources\Framework\view.js" />
     <Content Include="Resources\index.css" />
     <Content Include="Resources\index.html" />
   </ItemGroup>

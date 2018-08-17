@@ -59,14 +59,24 @@ namespace Theseus.Elements
             cb.Add($"caption: \"{Label}\",");
             cb.Add(true, $"isVisible: false,"); // TODO add visibility
             cb.Add(location != "null", $"location: {location};");
-            cb.Add(conversation != "", $"conversation: {gName}.{conversation},");
             cb.Add("examine: function(context) {").In();
             cb.Add($"context.state().add('A-{gName}.{Name}-examine');");
             cb.Add("var _s = \"\";");
             Section.EmitJavaScriptCode(semantics, cb);
             cb.Add("context.setMessage(_s);");
             cb.Add("context.update();").Out();
-            cb.Add("}").Out();
+            cb.Add("},");
+
+            if (conversation != "")
+            {
+                cb.Add("talk: function(context) {").In();
+                cb.Add($"context.state().add('A-{gName}.{Name}-talk');");
+                cb.Add($"THESEUS.context.conversation = new {gName}.{conversation};");
+                cb.Add("context.update();").Out();
+                cb.Add("}");
+            }
+
+            cb.Out();
             cb.Add("});");
         }
 

@@ -471,7 +471,6 @@ THESEUS.Character = function(info) {
     var caption = info.caption;
     var isVisible = withDefaultValue(info.isVisible, true);
     var location = withDefaultValue(info.location, null);
-    var conversation = withDefaultValue(info.conversation, null);
 
     var character = {
         caption: caption,
@@ -489,7 +488,9 @@ THESEUS.Character = function(info) {
     function getVerbs(context) {
         var verbs = new THESEUS.Collection();
         verbs.add("Examine", info.examine);
-        verbs.add("Talk", conversation);
+        if (info.talk != undefined) {
+            verbs.add("Talk", info.talk);
+        }
         return verbs;
     }
 
@@ -514,29 +515,18 @@ THESEUS.Character = function(info) {
 THESEUS.Conversation = function() {
 	var _statements = {};
 	var _responses = {};
-	var _showConversation = null;
-	var _addStatementToView = null;
-	var _addResponseToView = null;
-	var _clearView = null;
-	var _hideConversation = null;
+
+    var _currentStatementId;
+    var currentStatement;
+    var currentResponses;
 
 	return {
-		initialize : initialize,
 		addStatement : addStatement,
 		setResponses : setResponses,
 		startConversation : startConversation,
-		respond : respond,
-        end : end,
-        clear : clear,
+        currentStatement : () => currentStatement,
+        currentResponses : () => currentResponses,
 	}	
-
-	function initialize(showConversation, addStatement, addResponse, clear, hideConversation) {
-		_showConversation = showConversation;
-		_addStatementToView = addStatement;
-		_addResponseToView = addResponse;
-		_clearView = clear;
-		_hideConversation = hideConversation;
-	}
 
 	function addStatement(id, func) {
 		_statements[id] = func;
@@ -546,36 +536,27 @@ THESEUS.Conversation = function() {
 		_responses[id] = ids;
 	}
 
-	function startConversation(id) {
-		_showConversation();
-		respond(0, id);
-	}
+    function startConversation(id) { 
+        setStatementId(id);
+    }
 
-	function respond(responseId, newStatementId) {
-		if (newStatementId == 0) {
-		    THESEUS.conversation.end();
-            if (THESEUS.view != undefined) { THESEUS.view.update(THESEUS.context); }
-			return;
-		}
+    function setStatementId(i) {
+        if (i == 0) {
+            currentStatement = undefined;
+            return;
+        }
 
-		_clearView();
-		var func = _statements[newStatementId];
- 		_addStatementToView(func());
- 		_responses[newStatementId].forEach(
-  			r_id => {
-  				var func = _statements[r_id];
+        _currentStatementId = i;
+		currentStatement = _statements[_currentStatementId]();
+        
+        currentResponses = [];
+        _responses[_currentStatementId].forEach(
+            r_id => {
+                var func = _statements[r_id];
                 var id = _responses[r_id][0];
-                _addResponseToView(func(), r_id, id);
-  			});
-	}
-
-	function end() {
-		_hideConversation();
-	}
-
-    function clear() {
-        _statements = {};
-        _responses = {};
+                // todo fix this! We must not evaluate the function (and have the side effects) unless the item is actually selected
+                currentResponses.push({text : func(), responseId : r_id, fn : () => setStatementId(id)});
+            });
     }
 };
 
@@ -593,6 +574,7 @@ THESEUS.Context = function () {
     var historicFlags;
     var characters;
     var state;
+    var conversation;
 
     function initialize(loc, msg) {
         initialLocation = loc;
@@ -605,6 +587,7 @@ THESEUS.Context = function () {
         historicLocations = [];
         characters = [];
         state = new THESEUS.State();
+        conversation = undefined;
     }
 
     function reset() {
@@ -658,6 +641,7 @@ THESEUS.Context = function () {
         historicFlags: () => historicFlags,
         state: () => state,
         getObjectByName: getObjectByName,
+        conversation: conversation,
     }
 
     return obj;
@@ -736,4 +720,3 @@ THESEUS.State = function() {
 }
 
 THESEUS.context = new THESEUS.Context();
-THESEUS.conversation = new THESEUS.Conversation();
