@@ -24,5 +24,5 @@ internal class Projector(int width, int height, int cameraDistance)
     }
 
     private Coord2d ProjectCoordinate(Coord3d c) => new(c.X * cameraDistance / (cameraDistance + c.Z), -c.Y * cameraDistance / (cameraDistance + c.Z));
-    private Polygon2d ProjectPolygon(Polygon3d p) => new([.. p.Coord3Ds.Select(ProjectCoordinate)], p.Id);
+    private Polygon2d ProjectPolygon(Polygon3d p) => new([.. p.Coord3Ds.Select(ProjectCoordinate)], p.DrawInfo, p.Id);
 }

@@ -16,7 +16,7 @@ internal class BitmapRenderer(int width, int height)
             var polygon = new Polygon(p.Points.Select(p => new PointF(p.X, p.Y)).ToArray());
             image.Mutate(ctx => ctx.Paint(canvas =>
             {
-                canvas.Fill(Brushes.Solid(Color.Yellow), polygon);
+                canvas.Fill(Brushes.Solid(Color.Parse(p.DrawInfo.FillStyle)), polygon);
                 canvas.Draw(Pens.Solid(Color.Black, 1), polygon);
             }));
         }
