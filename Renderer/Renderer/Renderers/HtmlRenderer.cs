@@ -5,17 +5,21 @@ namespace Renderer.Renderers;
 
 internal class HtmlRenderer(int width, int height)
 {
-    public string Html => HtmlTemplate
-        .Replace("<WIDTH>", $"{width}")
-        .Replace("<HEIGHT>", $"{height}")
-        .Replace("<CODE>", stringBuilder.ToString());
-
     public void Render(IEnumerable<Polygon2d> polygons)
     {
         foreach(var p in polygons)
         {
             Render(p);
         }
+    }
+
+    public void Save(string fileName)
+    {
+        var html = HtmlTemplate
+            .Replace("<WIDTH>", $"{width}")
+            .Replace("<HEIGHT>", $"{height}")
+            .Replace("<CODE>", stringBuilder.ToString());
+        File.WriteAllText(fileName, html);
     }
 
     private void Render(Polygon2d polygon)
@@ -29,7 +33,7 @@ internal class HtmlRenderer(int width, int height)
         stringBuilder.Append($"}}ctx.lineTo({x0},{y0});ctx.fill();ctx.stroke();");
     }
 
-    private StringBuilder stringBuilder = new();
+    private readonly StringBuilder stringBuilder = new();
 
     private const string HtmlTemplate = """
 <!DOCTYPE html>

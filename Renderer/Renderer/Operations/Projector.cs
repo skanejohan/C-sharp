@@ -4,7 +4,7 @@ namespace Renderer.Operations;
 
 internal class Projector(int width, int height, int cameraDistance)
 {
-    public IEnumerable<Polygon2d> ProjectObject(ProjectionObject o)
+    public IEnumerable<Polygon2d> ProjectObject(ThreeDimObject o)
     {
         var sortedPolygons = o.Object.Polygon3ds.OrderBy(p => -p.Coord3Ds.Select(c => c.Z).Max());
         var polygons = sortedPolygons.Select(ProjectPolygon).ToArray();
